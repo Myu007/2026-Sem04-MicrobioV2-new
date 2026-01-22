@@ -1,0 +1,4236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Quiz Application - 198 Questions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark Mode - FIXED VISIBILITY ISSUES */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .header {
+            background: #2c2c54;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .quiz-section {
+            background: #2c2c54;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .controls-panel,
+        body.dark-mode .question-grid {
+            background: #2c2c54;
+            color: #e0e0e0;
+        }
+
+        /* FIXED: Dark mode title visibility */
+        body.dark-mode .title {
+            color: #e0e0e0 !important;
+        }
+
+        /* FIXED: Dark mode controls title visibility */
+        body.dark-mode .controls-title,
+        body.dark-mode .grid-title {
+            color: #e0e0e0 !important;
+        }
+
+        /* FIXED: Dark mode jump to question label visibility */
+        body.dark-mode .jump-to-question label {
+            color: #e0e0e0 !important;
+        }
+
+        /* FIXED: Dark mode question text visibility */
+        body.dark-mode .question-text {
+            color: #e0e0e0 !important;
+        }
+
+        body.dark-mode .answer-option {
+            background: #40407a;
+            border-color: #706fd3;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .answer-option:hover:not(.disabled) {
+            background: #5352ed;
+            border-color: #3742fa;
+        }
+
+        /* FIXED: Dark mode option labels (A, B, C, D, E) visibility */
+        body.dark-mode .option-label {
+            background: #706fd3 !important;
+            color: #ffffff !important;
+        }
+
+        /* FIXED: Dark mode correct/incorrect answer visibility */
+        body.dark-mode .answer-option.correct {
+            background: #4caf50 !important;
+            color: #ffffff !important;
+            border-color: #388e3c !important;
+        }
+
+        body.dark-mode .answer-option.incorrect {
+            background: #f44336 !important;
+            color: #ffffff !important;
+            border-color: #d32f2f !important;
+        }
+
+        body.dark-mode .answer-option.correct .option-label,
+        body.dark-mode .answer-option.incorrect .option-label {
+            background: rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff !important;
+        }
+
+        /* FIXED: Dark mode correct answer mode visibility */
+        body.dark-mode .answer-option.correct-answer-mode {
+            background: #4caf50 !important;
+            color: #ffffff !important;
+            border: 2px solid #388e3c !important;
+            font-weight: 600;
+        }
+
+        body.dark-mode .answer-option.other-answer-mode {
+            background: #40407a !important;
+            color: #b0b0b0 !important;
+            border: 1px solid #706fd3 !important;
+            opacity: 0.7;
+        }
+
+        body.dark-mode .grid-item {
+            background: #40407a;
+            border-color: #706fd3;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .grid-item:hover {
+            background: #5352ed;
+            border-color: #3742fa;
+        }
+
+        /* Exam Mode Body Styles */
+        body.exam-mode {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        body.exam-mode.dark-mode {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Container */
+        body.exam-mode .container {
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Header */
+        body.exam-mode .header {
+            background: #e8e8e8;
+            border-radius: 0;
+            margin-bottom: 0;
+            padding: 15px 20px;
+            box-shadow: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        body.exam-mode.dark-mode .header {
+            background: #2c2c54;
+            border-bottom: 1px solid #40407a;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Title */
+        body.exam-mode .title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        body.exam-mode.dark-mode .title {
+            color: #e0e0e0;
+        }
+
+        .timer-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Timer Section */
+        body.exam-mode .timer-section {
+            gap: 20px;
+        }
+
+        .timer-settings {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .timer-settings.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Exam Mode Timer Settings - Show in exam mode */
+        body.exam-mode .timer-settings {
+            display: flex;
+        }
+
+        /* NEW: Question Shuffle Settings for Exam Mode */
+        .question-shuffle-settings {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: #fff3e0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #ff9800;
+            transition: all 0.3s ease;
+        }
+
+        .question-shuffle-settings.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Show question shuffle settings only in exam mode */
+        body.exam-mode .question-shuffle-settings {
+            display: flex;
+        }
+
+        .question-count-settings {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #2196f3;
+            transition: all 0.3s ease;
+        }
+
+        .question-count-settings.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Show question count settings only in exam mode */
+        body.exam-mode .question-count-settings {
+            display: flex;
+        }
+
+        .timer-input, .count-input {
+            width: 60px;
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .timer-label, .count-label, .shuffle-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .timer-start-btn, .count-reset-btn, .shuffle-toggle-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .timer-start-btn:hover, .count-reset-btn:hover, .shuffle-toggle-btn:hover {
+            background: #218838;
+        }
+
+        .count-reset-btn {
+            background: #2196f3;
+        }
+
+        .count-reset-btn:hover {
+            background: #1976d2;
+        }
+
+        .shuffle-toggle-btn {
+            background: #ff9800;
+        }
+
+        .shuffle-toggle-btn:hover {
+            background: #f57c00;
+        }
+
+        .shuffle-toggle-btn.active {
+            background: #4caf50;
+        }
+
+        .shuffle-toggle-btn.active:hover {
+            background: #388e3c;
+        }
+
+        .timer {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            border-radius: 25px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #d32f2f;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Timer */
+        body.exam-mode .timer {
+            background: #ffcdd2;
+            border: 1px solid #f44336;
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: #d32f2f;
+            font-size: 14px;
+        }
+
+        .timer.active {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        /* Exam Mode Active Timer */
+        body.exam-mode .timer.active {
+            background: #ffcdd2;
+            border-color: #f44336;
+            color: #d32f2f;
+        }
+
+        /* NEW: Question Shuffle Display */
+        .question-shuffle-display {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #e65100;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        body.exam-mode .question-shuffle-display {
+            display: flex;
+        }
+
+        .question-shuffle-display.active {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        /* NEW: Question Count Display */
+        .question-count-display {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #1565c0;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        body.exam-mode .question-count-display {
+            display: flex;
+        }
+
+        .timer-reset-btn, .shuffle-reset-btn, .count-reset-display-btn {
+            background: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .timer-reset-btn.visible,
+        .shuffle-reset-btn.visible,
+        .count-reset-display-btn.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .timer-reset-btn:hover,
+        .shuffle-reset-btn:hover,
+        .count-reset-display-btn:hover {
+            background: #e64a19;
+        }
+
+        .count-reset-display-btn {
+            background: #2196f3;
+        }
+
+        .count-reset-display-btn:hover {
+            background: #1976d2;
+        }
+
+        .timer-expired-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .timer-expired-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .timer-expired-message {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .result-message {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .result-message.passed {
+            border-left: 5px solid #4caf50;
+        }
+
+        .result-message.failed {
+            border-left: 5px solid #f44336;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .result-title.passed {
+            color: #4caf50;
+        }
+
+        .result-title.failed {
+            color: #f44336;
+        }
+
+        .result-stats {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .exit-btn {
+            background: #37474f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .exit-btn:hover {
+            background: #455a64;
+        }
+
+        /* Exam Mode Exit Button */
+        body.exam-mode .exit-btn {
+            background: #2c3e50;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Main Content */
+        body.exam-mode .main-content {
+            grid-template-columns: 1fr;
+            gap: 0;
+            background: #f5f5f5;
+        }
+
+        body.exam-mode.dark-mode .main-content {
+            background: #1a1a2e;
+        }
+
+        .quiz-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.3s ease, all 0.3s ease;
+        }
+
+        /* Exam Mode Quiz Section */
+        body.exam-mode .quiz-section {
+            background: #f5f5f5;
+            border-radius: 0;
+            padding: 20px;
+            box-shadow: none;
+            margin-bottom: 0;
+        }
+
+        body.exam-mode.dark-mode .quiz-section {
+            background: #1a1a2e;
+        }
+
+        .quiz-section.timer-expired {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .question-header {
+            background: #3f51b5;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Question Header */
+        body.exam-mode .question-header {
+            background: #0D0A69;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            justify-content: space-between;
+        }
+
+        .question-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Question Number */
+        body.exam-mode .question-number {
+            background: #34495e;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .question-counter {
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* Exam Mode Question Counter */
+        body.exam-mode .question-counter {
+            display: inline-block;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Exam Mode Question Text - NO OVERLAPPING NUMBER */
+        body.exam-mode .question-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        body.exam-mode.dark-mode .question-text {
+            color: #e0e0e0;
+        }
+
+        .answers {
+            space-y: 12px;
+        }
+
+        .answer-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Exam Mode Answer Options */
+        body.exam-mode .answer-option {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        body.exam-mode.dark-mode .answer-option {
+            background: #40407a;
+            border-color: #706fd3;
+            color: #e0e0e0;
+        }
+
+        .answer-option:hover:not(.disabled) {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-2px);
+        }
+
+        /* Exam Mode Answer Option Hover */
+        body.exam-mode .answer-option:hover:not(.disabled) {
+            background: #e8f4fd;
+            border-color: #2196f3;
+            transform: none;
+        }
+
+        body.exam-mode.dark-mode .answer-option:hover:not(.disabled) {
+            background: #5352ed;
+            border-color: #3742fa;
+        }
+
+        .answer-option.selected {
+            background: #2196f3;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        /* Exam Mode Selected Answer */
+        body.exam-mode .answer-option.selected {
+            background: #2196f3;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        .answer-option.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #388e3c;
+        }
+
+        .answer-option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .answer-option.correct-answer-mode {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+            font-weight: 600;
+        }
+
+        .answer-option.other-answer-mode {
+            background: #f5f5f5;
+            color: #757575;
+            border: 1px solid #e0e0e0;
+            opacity: 0.7;
+        }
+
+        .answer-option.disabled {
+            cursor: not-allowed;
+        }
+
+        .answer-option.timer-expired {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .option-label {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        /* Exam Mode Option Label */
+        body.exam-mode .option-label {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            background: white;
+            font-size: 0;
+            position: relative;
+        }
+
+        body.exam-mode .answer-option.selected .option-label {
+            background: #2196f3;
+            border-color: #2196f3;
+        }
+
+        body.exam-mode .answer-option.selected .option-label::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .answer-option.selected .option-label,
+        .answer-option.correct .option-label,
+        .answer-option.incorrect .option-label {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .option-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Navigation */
+        body.exam-mode .navigation {
+            justify-content: flex-start;
+            gap: 15px;
+            border-top: none;
+            margin-top: 20px;
+            padding-top: 0;
+        }
+
+        .nav-btn {
+            background: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        /* Exam Mode Navigation Buttons */
+        body.exam-mode .nav-btn {
+            background: #2196f3;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: #303f9f;
+        }
+
+        body.exam-mode .nav-btn:hover {
+            background: #1976d2;
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Exam Mode Sidebar - HIDE IN EXAM MODE */
+        body.exam-mode .sidebar {
+            display: none;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .mode-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .toggle-btn:hover {
+            background: #e9ecef;
+        }
+
+        .toggle-btn.active {
+            background: #3f51b5;
+            color: white;
+            border-color: #3f51b5;
+        }
+
+        .jump-to-question {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .jump-to-question label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .jump-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .jump-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .jump-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .jump-btn:hover {
+            background: #1976d2;
+        }
+
+        .question-grid {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .grid-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+        }
+
+        .grid-item {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .grid-item:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .grid-item.current {
+            background: #3f51b5;
+            color: white;
+            border-color: #3f51b5;
+        }
+
+        .grid-item.answered {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        /* NEW: Correct answer in grid (Green) */
+        .grid-item.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        /* NEW: Incorrect answer in grid (Red) */
+        .grid-item.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .grid-item.unanswered {
+            background: #ff9800;
+            color: white;
+            border-color: #ff9800;
+        }
+
+        /* FIXED: SINGLE Exam Mode Question Grid - Navy Blue Header and White Background */
+        .exam-question-grid {
+            display: none;
+            margin-top: 20px;
+        }
+
+        body.exam-mode .exam-question-grid {
+            display: block;
+        }
+
+        .exam-grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #0D0A69;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .exam-grid-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .exam-grid-toggle {
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .exam-grid-toggle:hover {
+            background: #4a6741;
+        }
+
+        /* FIXED: White background for exam grid container */
+        .exam-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+            gap: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            background: white;
+            padding: 15px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .exam-grid-container.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding: 0;
+        }
+
+        /* FIXED: Exam Grid Items - Red color like reference image */
+        .exam-grid-item {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #c0392b;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 11px;
+            transition: all 0.3s;
+            background: #e74c3c;
+            color: white;
+        }
+
+        .exam-grid-item:hover {
+            background: #c0392b;
+        }
+
+        .exam-grid-item.current {
+            background: #3498db;
+            border-color: #2980b9;
+        }
+
+        /* Answered questions - Red background like in reference */
+        .exam-grid-item.answered {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+
+        /* Unanswered questions - Red background like in reference */
+        .exam-grid-item.unanswered {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+
+        /* FIXED: Hide mobile question dropdown in exam mode */
+        .mobile-question-dropdown {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* FIXED: Hide mobile dropdown in exam mode */
+        body.exam-mode .mobile-question-dropdown {
+            display: none !important;
+        }
+
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .dropdown-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .dropdown-arrow {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-arrow.expanded {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .dropdown-content.expanded {
+            max-height: 300px;
+            overflow-y: auto; /* Added scroll functionality */
+            padding-bottom: 10px;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .timer-section {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .quiz-section {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .answer-option {
+                padding: 12px 15px;
+                gap: 10px;
+            }
+
+            .option-label {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+
+            .controls-panel,
+            .question-grid {
+                padding: 15px;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+                gap: 6px;
+            }
+
+            .grid-item {
+                width: 35px;
+                height: 35px;
+                font-size: 11px;
+            }
+
+            /* Show mobile dropdown instead of sidebar grid in NON-EXAM mode only */
+            .question-grid {
+                display: none;
+            }
+
+            .mobile-question-dropdown {
+                display: block;
+            }
+
+            /* FIXED: Hide mobile dropdown in exam mode on mobile too */
+            body.exam-mode .mobile-question-dropdown {
+                display: none !important;
+            }
+
+            /* Exam Mode Mobile Adjustments */
+            body.exam-mode .container {
+                padding: 0;
+            }
+
+            body.exam-mode .header {
+                padding: 10px 15px;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            body.exam-mode .timer-section {
+                gap: 10px;
+            }
+
+            body.exam-mode .quiz-section {
+                padding: 15px;
+            }
+
+            body.exam-mode .question-text {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            body.exam-mode .answer-option {
+                padding: 10px 12px;
+                margin-bottom: 6px;
+            }
+
+            body.exam-mode .option-label {
+                width: 18px;
+                height: 18px;
+            }
+
+            body.exam-mode .navigation {
+                flex-direction: row;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            body.exam-mode .nav-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                width: auto;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 480px) {
+            .title {
+                font-size: 18px;
+            }
+
+            body.exam-mode .title {
+                font-size: 14px;
+            }
+
+            .timer-input, .count-input {
+                width: 50px;
+                font-size: 12px;
+            }
+
+            .timer {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            body.exam-mode .timer {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .question-text {
+                font-size: 14px;
+            }
+
+            body.exam-mode .question-text {
+                font-size: 13px;
+            }
+
+            .answer-option {
+                padding: 10px 12px;
+            }
+
+            body.exam-mode .answer-option {
+                padding: 8px 10px;
+            }
+
+            .option-text {
+                font-size: 14px;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+                gap: 4px;
+            }
+
+            .grid-item {
+                width: 30px;
+                height: 30px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Enhanced Quiz Application</div>
+            <div class="timer-section">
+                <div class="timer-settings">
+                    <span class="timer-label">Minutes:</span>
+                    <input type="number" class="timer-input" id="minutesInput" value="30" min="1" max="180">
+                    <span class="timer-label">Seconds:</span>
+                    <input type="number" class="timer-input" id="secondsInput" value="0" min="0" max="59">
+                    <button class="timer-start-btn" onclick="startTimer()">Start</button>
+                </div>
+                
+                <div class="question-shuffle-settings">
+                    <span class="shuffle-label">🔀 Shuffle Questions:</span>
+                    <button class="shuffle-toggle-btn" id="shuffleToggleBtn" onclick="toggleQuestionShuffle()">Enable</button>
+                </div>
+                
+                <div class="question-count-settings">
+                    <span class="count-label">Questions:</span>
+                    <input type="number" class="count-input" id="questionCountInput" value="198" min="1" max="198">
+                    <span class="count-label">/ 198</span>
+                    <button class="count-reset-btn" onclick="setQuestionCount()">Set</button>
+                </div>
+                
+                <div class="timer" id="timer">
+                    <span>⏰</span>
+                    <span id="timerDisplay">No timer set</span>
+                    <button class="timer-reset-btn" id="timerResetBtn" onclick="resetTimer()">Reset</button>
+                </div>
+                
+                <div class="question-shuffle-display" id="questionShuffleDisplay">
+                    <span>🔀</span>
+                    <span id="shuffleDisplayText">Shuffle: Off</span>
+                    <button class="shuffle-reset-btn" id="shuffleResetBtn" onclick="resetQuestionShuffle()">Reset</button>
+                </div>
+                
+                <div class="question-count-display" id="questionCountDisplay">
+                    <span>📊</span>
+                    <span id="countDisplayText">198 / 198</span>
+                    <button class="count-reset-display-btn" id="countResetDisplayBtn" onclick="resetQuestionCount()">Reset</button>
+                </div>
+                
+                <button class="exit-btn" onclick="exitQuiz()">
+                    <span>🚪</span>
+                    <span id="exitBtnText">Exit</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="quiz-section" id="quizSection">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumber">Question 1</div>
+                    <div class="question-counter" id="questionCounter">1 / 198</div>
+                </div>
+                
+                <div class="question-text" id="questionText">
+                    Loading question...
+                </div>
+                
+                <div class="answers" id="answersContainer">
+                    </div>
+                
+                <div class="navigation">
+                    <button class="nav-btn" id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
+                    <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+                    <button class="nav-btn" id="finishBtn" onclick="finishQuiz()" style="display: none;">Finish</button>
+                    <button class="nav-btn" id="submitBtn" onclick="finishQuiz()" style="display: none;">Submit</button>
+                </div>
+
+                <div class="mobile-question-dropdown" id="mobileQuestionDropdown">
+                    <div class="dropdown-header" onclick="toggleMobileDropdown()">
+                        <div class="dropdown-title">Question Navigator</div>
+                        <div class="dropdown-arrow" id="dropdownArrow">▼</div>
+                    </div>
+                    <div class="dropdown-content" id="dropdownContent">
+                        <div class="grid-container" id="mobileQuestionGrid">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="exam-question-grid" id="examQuestionGrid">
+                    <div class="exam-grid-header">
+                        <div class="exam-grid-title">Question Navigator</div>
+                        <button class="exam-grid-toggle" id="examGridToggle" onclick="toggleExamGrid()">Collapse</button>
+                    </div>
+                    <div class="exam-grid-container" id="examGridContainer">
+                        </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="controls-panel">
+                    <div class="controls-title">Quiz Controls</div>
+                    <div class="mode-toggles">
+                        <button class="toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                        <button class="toggle-btn" id="answerModeBtn" onclick="toggleAnswerMode()">💡 Answer Mode</button>
+                        <button class="toggle-btn" id="questionShuffleModeBtn" onclick="toggleQuestionShuffleMode()">🔀 Shuffle Questions</button>
+                        <button class="toggle-btn" id="examModeBtn" onclick="toggleExamMode()">🎓 Simulate Exam Mode</button>
+                    </div>
+                    <div class="jump-to-question">
+                        <label for="jumpInput">Jump to Question:</label>
+                        <div class="jump-input-group">
+                            <input type="number" class="jump-input" id="jumpInput" min="1" max="198" placeholder="Enter question number">
+                            <button class="jump-btn" onclick="jumpToQuestionNumber()">Go</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-grid">
+                    <div class="grid-title">Question Navigator</div>
+                    <div class="grid-container" id="questionGrid">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer-expired-overlay" id="timerExpiredOverlay">
+        <div class="timer-expired-message">
+            <h2>⏰ Time's Up!</h2>
+            <p>The timer has expired. Your quiz has been automatically submitted.</p>
+            <button class="nav-btn" onclick="hideTimerExpiredOverlay()">Continue</button>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-message" id="resultMessage">
+            <div class="result-title" id="resultTitle">Quiz Completed!</div>
+            <div class="result-stats" id="resultStats">
+                </div>
+            <button class="nav-btn" onclick="hideResultOverlay()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data
+        const questions = [
+        {
+            question: "The primary purpose of laboratory safety rules in a microbiology lab is to:",
+            answers: [
+                { text: "Protect personnel and prevent spread of infection", correct: true },
+                { text: "Prevent contamination of only the culture", correct: false },
+                { text: "Ensure accuracy of test results", correct: false },
+                { text: "Maintain room temperature at constant level", correct: false },
+                { text: "Reduce use of disinfectants", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following biosafety levels (BSL) is required for handling highly infectious pathogens such as Ebola virus?",
+            answers: [
+                { text: "BSL-4", correct: true },
+                { text: "BSL-3", correct: false },
+                { text: "BSL-2", correct: false },
+                { text: "BSL-1", correct: false },
+                { text: "BSL-5", correct: false },
+            ]
+        },
+        {
+            question: "The disinfectant most commonly used for routine surface cleaning in microbiology laboratories is:",
+            answers: [
+                { text: "Sodium hypochlorite (1%)", correct: true },
+                { text: "Ethanol (10%)", correct: false },
+                { text: "Lysol (0.1%)", correct: false },
+                { text: "Hydrogen peroxide (1%)", correct: false },
+                { text: "Distilled water", correct: false },
+            ]
+        },
+        {
+            question: "The Class II Type A2 Biological Safety Cabinet differs from Type B2 because:",
+            answers: [
+                { text: "Type A2 recirculates part of the air within the cabinet", correct: true },
+                { text: "Type B2 operates at lower airflow velocity", correct: false },
+                { text: "Type A2 exhausts all air directly to the outside", correct: false },
+                { text: "Type B2 lacks HEPA filters", correct: false },
+                { text: "Type A2 cannot be used for biohazard work", correct: false },
+            ]
+        },
+        {
+            question: "The main purpose of personal protective equipment (PPE) in a microbiology laboratory is to:",
+            answers: [
+                { text: "Protect the worker from exposure to hazardous biological agents", correct: true },
+                { text: "Enhance comfort during laboratory work", correct: false },
+                { text: "Improve visibility while using microscopes", correct: false },
+                { text: "Maintain constant room temperature", correct: false },
+                { text: "Identify different laboratory personnel", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following laboratory instruments is used for sterilization by dry heat?",
+            answers: [
+                { text: "Hot air oven", correct: true },
+                { text: "Autoclave", correct: false },
+                { text: "Water bath", correct: false },
+                { text: "Incubator", correct: false },
+                { text: "Laminar airflow hood", correct: false },
+            ]
+        },
+        {
+            question: "In microbiological research, the first step in the scientific method is:",
+            answers: [
+                { text: "Making an observation", correct: true },
+                { text: "Drawing conclusions", correct: false },
+                { text: "Performing the experiment", correct: false },
+                { text: "Formulating a hypothesis", correct: false },
+                { text: "Recording results", correct: false },
+            ]
+        },
+        {
+            question: "During a laboratory fire caused by an electrical short circuit, the most appropriate extinguisher to use is:",
+            answers: [
+                { text: "CO₂ or dry powder extinguisher", correct: true },
+                { text: "Water-based extinguisher", correct: false },
+                { text: "Foam-based extinguisher", correct: false },
+                { text: "Chlorine-based disinfectant spray", correct: false },
+                { text: "Wet cloth over the source", correct: false },
+            ]
+        },
+        {
+            question: "The resolving power of a light microscope is limited by which factor?",
+            answers: [
+                { text: "Wavelength of visible light", correct: true },
+                { text: "Type of stain used", correct: false },
+                { text: "Objective lens diameter", correct: false },
+                { text: "Condenser position", correct: false },
+                { text: "Coherence of light source", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following methods is most commonly used for preliminary identification of bacterial morphology?",
+            answers: [
+                { text: "Gram staining", correct: true },
+                { text: "Polymerase Chain Reaction (PCR)", correct: false },
+                { text: "ELISA", correct: false },
+                { text: "Western blot", correct: false },
+                { text: "Immunofluorescence", correct: false },
+            ]
+        },
+        {
+            question: "The principal advantage of using an oil immersion objective in microscopy is to:",
+            answers: [
+                { text: "Increase the numerical aperture and resolution", correct: true },
+                { text: "Increase working distance", correct: false },
+                { text: "Decrease the refractive index between glass and air", correct: false },
+                { text: "Magnify the image by 10 times", correct: false },
+                { text: "Reduce the brightness of the image", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following dyes is commonly used for simple staining of bacteria?",
+            answers: [
+                { text: "Both A and C", correct: true },
+                { text: "Crystal violet", correct: false },
+                { text: "Carbol fuchsin", correct: false },
+                { text: "Methylene blue", correct: false },
+                { text: "Malachite green", correct: false },
+            ]
+        },
+        {
+            question: "Which microscope is best suited for viewing stained bacterial smears prepared using simple or Gram staining techniques?",
+            answers: [
+                { text: "Bright-field microscope", correct: true },
+                { text: "Phase-contrast microscope", correct: false },
+                { text: "Dark-field microscope", correct: false },
+                { text: "Electron microscope", correct: false },
+                { text: "Fluorescence microscope", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following bacteria lack a rigid cell wall and show pleomorphism?",
+            answers: [
+                { text: "Mycoplasma pneumoniae", correct: true },
+                { text: "Mycobacterium tuberculosis", correct: false },
+                { text: "Rickettsia rickettsii", correct: false },
+                { text: "Chlamydia trachomatis", correct: false },
+                { text: "Escherichia coli", correct: false },
+            ]
+        },
+        {
+            question: "Elementary body and reticulate body forms are characteristic of which organism?",
+            answers: [
+                { text: "Chlamydia trachomatis", correct: true },
+                { text: "Rickettsia prowazekii", correct: false },
+                { text: "Coxiella burnetii", correct: false },
+                { text: "Mycoplasma hominis", correct: false },
+                { text: "Bartonella henselae", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following statements is true regarding fungal morphology?",
+            answers: [
+                { text: "Dimorphic fungi exist as yeasts in tissue and molds in environment.", correct: true },
+                { text: "Yeasts grow as multicellular filaments.", correct: false },
+                { text: "Molds grow as unicellular oval cells.", correct: false },
+                { text: "Dimorphic fungi exist as molds in tissue and yeasts in environment.", correct: false },
+                { text: "All fungi are obligate intracellular organisms.", correct: false },
+            ]
+        },
+        {
+            question: "What is the main morphological feature of Rickettsiae seen under microscopy?",
+            answers: [
+                { text: "Gram-negative pleomorphic coccobacilli", correct: true },
+                { text: "Gram-positive cocci", correct: false },
+                { text: "Acid-fast rods", correct: false },
+                { text: "Spirochetes", correct: false },
+                { text: "Yeast-like forms", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following lacks both cell wall and sterols?",
+            answers: [
+                { text: "Viruses", correct: true },
+                { text: "Mycoplasma", correct: false },
+                { text: "Ureaplasma", correct: false },
+                { text: "Rickettsia", correct: false },
+                { text: "Chlamydia", correct: false },
+            ]
+        },
+        {
+            question: "The main chemical component of the bacterial cell wall peptidoglycan is:",
+            answers: [
+                { text: "N-acetylglucosamine and N-acetylmuramic acid", correct: true },
+                { text: "Cellulose", correct: false },
+                { text: "Chitin", correct: false },
+                { text: "Teichoic acid and lipopolysaccharide", correct: false },
+                { text: "Ergosterol", correct: false },
+            ]
+        },
+        {
+            question: "Volutin (metachromatic) granules are best demonstrated by which staining method?",
+            answers: [
+                { text: "Albert’s stain", correct: true },
+                { text: "Ziehl–Neelsen stain", correct: false },
+                { text: "Gram stain", correct: false },
+                { text: "India ink preparation", correct: false },
+                { text: "Negative staining with nigrosin", correct: false },
+            ]
+        },
+        {
+            question: "What is the main difference between true motility and Brownian movement?",
+            answers: [
+                { text: "True motility is active, directional, and due to flagella", correct: true },
+                { text: "Brownian movement is rapid and directional", correct: false },
+                { text: "True motility is caused by molecular collisions", correct: false },
+                { text: "Brownian movement involves flagellar motion", correct: false },
+                { text: "Both involve flagellar propulsion", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following statements about bacterial spores is correct?",
+            answers: [
+                { text: "Spores contain dipicolinic acid and calcium ions", correct: true },
+                { text: "Spores are reproductive structures", correct: false },
+                { text: "Spores are formed by Gram-negative bacteria", correct: false },
+                { text: "Spores lack DNA and RNA", correct: false },
+                { text: "Spores are easily killed by boiling", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following bacterial groups obtains both carbon and energy from organic compounds?",
+            answers: [
+                { text: "Chemoheterotrophs", correct: true },
+                { text: "Photoautotrophs", correct: false },
+                { text: "Chemoautotrophs", correct: false },
+                { text: "Lithotrophs", correct: false },
+                { text: "Photolithotrophs", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following pairs of terms correctly describes Nitrosomonas?",
+            answers: [
+                { text: "Chemoautotrophic and nitrifying", correct: true },
+                { text: "Photoautotrophic and anaerobic", correct: false },
+                { text: "Chemoheterotrophic and fermentative", correct: false },
+                { text: "Photoheterotrophic and facultative", correct: false },
+                { text: "Saprophytic and photosynthetic", correct: false },
+            ]
+        },
+        {
+            question: "Which type of medium enhances the growth of fastidious organisms by addition of blood, serum, or egg?",
+            answers: [
+                { text: "Enrichment medium", correct: true },
+                { text: "Basal medium", correct: false },
+                { text: "Selective medium", correct: false },
+                { text: "Differential medium", correct: false },
+                { text: "Transport medium", correct: false },
+            ]
+        },
+        {
+            question: "The bacterial growth curve, when plotted on a semi-log graph, consists of all the following phases EXCEPT:",
+            answers: [
+                { text: "Sporulation phase", correct: true },
+                { text: "Lag phase", correct: false },
+                { text: "Log (exponential) phase", correct: false },
+                { text: "Stationary phase", correct: false },
+                { text: "Decline (death) phase", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following bacteria require oxygen for survival and use it as the final electron acceptor?",
+            answers: [
+                { text: "Pseudomonas aeruginosa", correct: true },
+                { text: "Clostridium tetani", correct: false },
+                { text: "Bacteroides fragilis", correct: false },
+                { text: "Lactobacillus acidophilus", correct: false },
+                { text: "Clostridium perfringens", correct: false },
+            ]
+        },
+        {
+            question: "Facultative anaerobes are characterized by:",
+            answers: [
+                { text: "Ability to grow in presence or absence of oxygen", correct: true },
+                { text: "Growth only in complete absence of oxygen", correct: false },
+                { text: "Growth only when oxygen is present", correct: false },
+                { text: "Dependence on CO₂ for metabolism", correct: false },
+                { text: "Exclusive use of fermentation pathway", correct: false },
+            ]
+        },
+        {
+            question: "The greatest amount of energy (ATP) is produced during which type of bacterial respiration?",
+            answers: [
+                { text: "Aerobic respiration", correct: true },
+                { text: "Anaerobic respiration", correct: false },
+                { text: "Fermentation", correct: false },
+                { text: "Photophosphorylation", correct: false },
+                { text: "None of the above", correct: false },
+            ]
+        },
+        {
+            question: "During anaerobic respiration, which of the following produces hydrogen sulfide (H₂S) as an end product?",
+            answers: [
+                { text: "Desulfovibrio desulfuricans", correct: true },
+                { text: "Nitrosomonas europaea", correct: false },
+                { text: "Rhizobium leguminosarum", correct: false },
+                { text: "Bacillus subtilis", correct: false },
+                { text: "Pseudomonas aeruginosa", correct: false },
+            ]
+        },
+        {
+            question: "In bacterial respiration, the electron transport chain is located in which structure?",
+            answers: [
+                { text: "Plasma (cytoplasmic) membrane", correct: true },
+                { text: "Cytoplasm", correct: false },
+                { text: "Nucleoid", correct: false },
+                { text: "Ribosome", correct: false },
+                { text: "Cell wall", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following pairs correctly matches bacterial type and its respiration mechanism?",
+            answers: [
+                { text: "Campylobacter jejuni — Microaerophilic", correct: true },
+                { text: "Clostridium perfringens — Aerobic respiration", correct: false },
+                { text: "Neisseria meningitidis — Obligate anaerobe", correct: false },
+                { text: "E. coli — Obligate aerobe", correct: false },
+                { text: "Streptococcus pyogenes — Obligate aerobe", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following techniques is most commonly used for isolating pure cultures from a mixed bacterial population?",
+            answers: [
+                { text: "Streak plate method", correct: true },
+                { text: "Pour plate method", correct: false },
+                { text: "Spread plate method", correct: false },
+                { text: "Slant culture", correct: false },
+                { text: "Deep culture", correct: false },
+            ]
+        },
+        {
+            question: "The medium used for cultivation of most non-fastidious bacteria under aerobic conditions is:",
+            answers: [
+                { text: "Nutrient agar", correct: true },
+                { text: "Blood agar", correct: false },
+                { text: "MacConkey agar", correct: false },
+                { text: "Lowenstein–Jensen medium", correct: false },
+                { text: "Robertson’s cooked meat medium", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following media is specifically used for anaerobic bacterial culture?",
+            answers: [
+                { text: "Robertson’s cooked meat medium", correct: true },
+                { text: "Blood agar", correct: false },
+                { text: "Nutrient agar", correct: false },
+                { text: "Chocolate agar", correct: false },
+                { text: "Sabouraud’s agar", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following techniques can demonstrate the presence of motile anaerobic bacteria in semi-solid medium?",
+            answers: [
+                { text: "Motility agar with reducing agent", correct: true },
+                { text: "Hanging drop method", correct: false },
+                { text: "Ziehl–Neelsen staining", correct: false },
+                { text: "Capsule staining", correct: false },
+                { text: "Gram staining", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following bacterial enzymes breaks down hydrogen peroxide into water and oxygen?",
+            answers: [
+                { text: "Catalase", correct: true },
+                { text: "Oxidase", correct: false },
+                { text: "Peroxidase", correct: false },
+                { text: "Coagulase", correct: false },
+                { text: "Hyaluronidase", correct: false },
+            ]
+        },
+        {
+            question: "Coagulase enzyme produced by Staphylococcus aureus contributes to:",
+            answers: [
+                { text: "Fibrin clot formation around bacteria", correct: true },
+                { text: "Breakdown of connective tissue", correct: false },
+                { text: "Destruction of red cells", correct: false },
+                { text: "Conversion of fibrin to fibrinogen", correct: false },
+                { text: "Hydrolysis of DNA", correct: false },
+            ]
+        },
+        {
+            question: "The enzyme urease is used diagnostically in detecting which organism?",
+            answers: [
+                { text: "Proteus vulgaris", correct: true },
+                { text: "Escherichia coli", correct: false },
+                { text: "Klebsiella pneumoniae", correct: false },
+                { text: "Pseudomonas aeruginosa", correct: false },
+                { text: "Neisseria gonorrhoeae", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is not a pathogenic enzyme but a diagnostic pigment?",
+            answers: [
+                { text: "Pyoverdin", correct: true },
+                { text: "Lecithinase", correct: false },
+                { text: "Streptokinase", correct: false },
+                { text: "Coagulase", correct: false },
+                { text: "Hyaluronidase", correct: false },
+            ]
+        },
+        {
+            question: "Which test is based on detection of bacterial proteolytic enzymes digesting casein in milk agar?",
+            answers: [
+                { text: "Casein hydrolysis test", correct: true },
+                { text: "Gelatin hydrolysis test", correct: false },
+                { text: "Catalase test", correct: false },
+                { text: "Urease test", correct: false },
+                { text: "Indole test", correct: false },
+            ]
+        },
+        {
+            question: "The enzyme oxidase is important for differentiating:",
+            answers: [
+                { text: "Enterobacteriaceae from Pseudomonas", correct: true },
+                { text: "Streptococcus from Staphylococcus", correct: false },
+                { text: "Clostridium from Bacillus", correct: false },
+                { text: "Klebsiella from Proteus", correct: false },
+                { text: "E. coli from Salmonella", correct: false },
+            ]
+        },
+        {
+            question: "The purpose of Giss color series media is to study which bacterial property?",
+            answers: [
+                { text: "Enzyme-based carbohydrate fermentation", correct: true },
+                { text: "Antibiotic susceptibility", correct: false },
+                { text: "Protein metabolism", correct: false },
+                { text: "Spore formation", correct: false },
+                { text: "Motility", correct: false },
+            ]
+        },
+        {
+            question: "What is the purpose of the Durham tube in Giss carbohydrate fermentation tests?",
+            answers: [
+                { text: "Detect gas production during fermentation", correct: true },
+                { text: "Detect enzyme hydrolysis of proteins", correct: false },
+                { text: "Detect motility of bacteria", correct: false },
+                { text: "Measure turbidity of growth", correct: false },
+                { text: "Detect reduction potential", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following pigment-producing bacteria can fluoresce under ultraviolet light and is important in wound infection diagnosis?",
+            answers: [
+                { text: "Pseudomonas aeruginosa", correct: true },
+                { text: "Serratia marcescens", correct: false },
+                { text: "Proteus mirabilis", correct: false },
+                { text: "Streptococcus pyogenes", correct: false },
+                { text: "Klebsiella pneumoniae", correct: false },
+            ]
+        },
+        {
+            question: "The enzymatic ability to ferment sugars in the Giss color series reflects which bacterial characteristic?",
+            answers: [
+                { text: "Metabolic adaptation", correct: true },
+                { text: "Structural virulence", correct: false },
+                { text: "Motility patterns", correct: false },
+                { text: "Antibiotic resistance", correct: false },
+                { text: "DNA replication efficiency", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following components is present in all viruses?",
+            answers: [
+                { text: "Capsid made of protein subunits", correct: true },
+                { text: "DNA and RNA together", correct: false },
+                { text: "Lipid envelope", correct: false },
+                { text: "Ribosomes", correct: false },
+                { text: "Mitochondria", correct: false },
+            ]
+        },
+        {
+            question: "Which one of the following viruses possesses a helical symmetry?",
+            answers: [
+                { text: "Influenza virus", correct: true },
+                { text: "Adenovirus", correct: false },
+                { text: "Herpes simplex virus", correct: false },
+                { text: "Poxvirus", correct: false },
+                { text: "Papillomavirus", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is the smallest known virus?",
+            answers: [
+                { text: "Poliovirus", correct: true },
+                { text: "Adenovirus", correct: false },
+                { text: "Rabies virus", correct: false },
+                { text: "Smallpox virus", correct: false },
+                { text: "Herpesvirus", correct: false },
+            ]
+        },
+        {
+            question: "The integrated form of bacteriophage DNA in bacterial chromosome is known as:",
+            answers: [
+                { text: "Prophage", correct: true },
+                { text: "Episome", correct: false },
+                { text: "Plasmid", correct: false },
+                { text: "Transposon", correct: false },
+                { text: "Lysosome", correct: false },
+            ]
+        },
+        {
+            question: "The process by which a bacteriophage transfers genetic material from one bacterium to another is called:",
+            answers: [
+                { text: "Transduction", correct: true },
+                { text: "Transformation", correct: false },
+                { text: "Conjugation", correct: false },
+                { text: "Transposition", correct: false },
+                { text: "Mutation", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following represents an extrachromosomal, autonomously replicating DNA element?",
+            answers: [
+                { text: "Plasmid", correct: true },
+                { text: "Transposon", correct: false },
+                { text: "Prophage", correct: false },
+                { text: "Chromatid", correct: false },
+                { text: "Ribosome", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following sterilization methods is best suited for heat-sensitive solutions such as vaccines or sera?",
+            answers: [
+                { text: "Filtration through membrane filters", correct: true },
+                { text: "Autoclaving", correct: false },
+                { text: "Boiling", correct: false },
+                { text: "Hot-air oven", correct: false },
+                { text: "Incineration", correct: false },
+            ]
+        },
+        {
+            question: "The minimum temperature and time required for dry heat sterilization in a hot-air oven are:",
+            answers: [
+                { text: "160 °C for 60 min", correct: true },
+                { text: "100 °C for 30 min", correct: false },
+                { text: "121 °C for 15 min", correct: false },
+                { text: "180 °C for 20 min", correct: false },
+                { text: "150 °C for 10 min", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is a chemical sterilant capable of killing spores?",
+            answers: [
+                { text: "2 % glutaraldehyde", correct: true },
+                { text: "70 % ethyl alcohol", correct: false },
+                { text: "Formalin 5 %", correct: false },
+                { text: "Chlorhexidine", correct: false },
+                { text: "Phenol 5 %", correct: false },
+            ]
+        },
+        {
+            question: "What is the most reliable method for sterilization of disposable plastic syringes and catheters?",
+            answers: [
+                { text: "Gamma radiation", correct: true },
+                { text: "Autoclaving", correct: false },
+                { text: "Hot-air oven", correct: false },
+                { text: "Boiling", correct: false },
+                { text: "Ultraviolet rays", correct: false },
+            ]
+        },
+        {
+            question: "Ethylene oxide gas sterilization acts primarily by:",
+            answers: [
+                { text: "Alkylation of nucleic acids and proteins", correct: true },
+                { text: "Denaturing bacterial proteins", correct: false },
+                { text: "Desiccation of cytoplasm", correct: false },
+                { text: "Oxidation of lipids", correct: false },
+                { text: "Blocking of cell wall synthesis", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following sterilization methods is used in laminar flow hoods and operation theatres for air sterilization?",
+            answers: [
+                { text: "Ultraviolet radiation", correct: true },
+                { text: "Gamma radiation", correct: false },
+                { text: "Microwave radiation", correct: false },
+                { text: "Infrared rays", correct: false },
+                { text: "Boiling water vapor", correct: false },
+            ]
+        },
+        {
+            question: "A communicable disease transmitted through the bite of an infected mosquito represents which mode of transmission?",
+            answers: [
+                { text: "Vector-borne (biological)", correct: true },
+                { text: "Direct contact", correct: false },
+                { text: "Airborne", correct: false },
+                { text: "Fomite transmission", correct: false },
+                { text: "Vehicle-borne", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is an example of a “vehicle-borne” mode of infection transmission?",
+            answers: [
+                { text: "Spread through blood transfusion", correct: true },
+                { text: "Spread by mosquito bites", correct: false },
+                { text: "Spread through kissing", correct: false },
+                { text: "Spread by inhalation of droplets", correct: false },
+                { text: "Spread through a skin puncture", correct: false },
+            ]
+        },
+        {
+            question: "The ability of a microorganism to adhere to host tissues is mainly due to:",
+            answers: [
+                { text: "Pili and fimbriae", correct: true },
+                { text: "Endotoxins", correct: false },
+                { text: "Capsules", correct: false },
+                { text: "Spores", correct: false },
+                { text: "Flagella only", correct: false },
+            ]
+        },
+        {
+            question: "A patient develops sepsis due to Neisseria meningitidis. The endotoxin responsible for shock is which component?",
+            answers: [
+                { text: "Lipid A portion of lipopolysaccharide", correct: true },
+                { text: "Capsule", correct: false },
+                { text: "Peptidoglycan layer", correct: false },
+                { text: "Porin protein", correct: false },
+                { text: "Flagellar antigen", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following terms refers to infection spread from one body site to another within the same individual?",
+            answers: [
+                { text: "Auto-infection", correct: true },
+                { text: "Cross-infection", correct: false },
+                { text: "Opportunistic infection", correct: false },
+                { text: "Reinfection", correct: false },
+                { text: "Mixed infection", correct: false },
+            ]
+        },
+        {
+            question: "A hospital outbreak of MRSA transmitted through the hands of healthcare workers is an example of:",
+            answers: [
+                { text: "Nosocomial (contact) transmission", correct: true },
+                { text: "Airborne transmission", correct: false },
+                { text: "Vector-borne transmission", correct: false },
+                { text: "Fomite-borne transmission", correct: false },
+                { text: "Zoonotic infection", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following organisms is most often associated with hospital outbreaks in burn units?",
+            answers: [
+                { text: "Pseudomonas aeruginosa", correct: true },
+                { text: "Streptococcus pyogenes", correct: false },
+                { text: "Staphylococcus epidermidis", correct: false },
+                { text: "Enterococcus faecalis", correct: false },
+                { text: "Acinetobacter baumannii", correct: false },
+            ]
+        },
+        {
+            question: "A bloodstream infection appearing 3 days after central-line insertion is most likely caused by:",
+            answers: [
+                { text: "Staphylococcus epidermidis", correct: true },
+                { text: "Neisseria meningitidis", correct: false },
+                { text: "Streptococcus pyogenes", correct: false },
+                { text: "Escherichia coli", correct: false },
+                { text: "Candida albicans", correct: false },
+            ]
+        },
+        {
+            question: "The most effective method of preventing hospital-acquired infections is:",
+            answers: [
+                { text: "Hand hygiene by healthcare workers", correct: true },
+                { text: "Routine use of antibiotics", correct: false },
+                { text: "Fumigation every week", correct: false },
+                { text: "Use of masks only", correct: false },
+                { text: "Isolation of all patients", correct: false },
+            ]
+        },
+        {
+            question: "Which disinfectant is most effective for surface decontamination against Clostridioides difficile spores?",
+            answers: [
+                { text: "0.5–1 % sodium hypochlorite (bleach)", correct: true },
+                { text: "70 % alcohol", correct: false },
+                { text: "Quaternary ammonium compounds", correct: false },
+                { text: "Phenol 5 %", correct: false },
+                { text: "2 % chlorhexidine", correct: false },
+            ]
+        },
+        {
+            question: "Coliform bacteria are used as indicator organisms in sanitary microbiology of water because they:",
+            answers: [
+                { text: "Indicate fecal contamination of water", correct: true },
+                { text: "Are non-pathogenic", correct: false },
+                { text: "Grow only in sewage", correct: false },
+                { text: "Are resistant to chlorine", correct: false },
+                { text: "Produce toxins causing diarrhea", correct: false },
+            ]
+        },
+        {
+            question: "The standard test used to estimate bacterial contamination of water is:",
+            answers: [
+                { text: "Most Probable Number (MPN) test", correct: true },
+                { text: "Coagulase test", correct: false },
+                { text: "Catalase test", correct: false },
+                { text: "Oxidase test", correct: false },
+                { text: "Satellite test", correct: false },
+            ]
+        },
+        {
+            question: "The most appropriate container for collecting urine for culture is:",
+            answers: [
+                { text: "Sterile, screw-capped wide-mouth container", correct: true },
+                { text: "Open test tube covered with cotton", correct: false },
+                { text: "Syringe with a needle attached", correct: false },
+                { text: "Plastic bag without lid", correct: false },
+                { text: "Plain glass bottle used for biochemistry tests", correct: false },
+            ]
+        },
+        {
+            question: "The ideal time to collect a blood sample for culture in a case of suspected septicemia is:",
+            answers: [
+                { text: "Just before the peak of fever or at the onset of chills", correct: true },
+                { text: "During the first 24 hours after fever subsides", correct: false },
+                { text: "Immediately after antibiotic administration", correct: false },
+                { text: "At any time of the day", correct: false },
+                { text: "2 hours after starting antipyretics", correct: false },
+            ]
+        },
+        {
+            question: "For cerebrospinal fluid (CSF) examination in suspected meningitis, the specimen should be:",
+            answers: [
+                { text: "Sent immediately to the lab without refrigeration", correct: true },
+                { text: "Refrigerated immediately before transport", correct: false },
+                { text: "Stored at –20 °C until culture", correct: false },
+                { text: "Collected in a dry, unsterile tube", correct: false },
+                { text: "Mixed with alcohol as preservative", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following specimens should always be transported to the laboratory in an anaerobic transport system?",
+            answers: [
+                { text: "Pus from an abscess aspirated by needle", correct: true },
+                { text: "Throat swab for Streptococcus pyogenes", correct: false },
+                { text: "Urine sample for routine culture", correct: false },
+                { text: "Blood sample for malaria", correct: false },
+                { text: "Sputum sample for AFB", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following should never be used to transport a specimen for virus isolation?",
+            answers: [
+                { text: "Sterile distilled water", correct: true },
+                { text: "Viral transport medium (VTM) with antibiotics", correct: false },
+                { text: "Phosphate-buffered saline", correct: false },
+                { text: "Hank’s balanced salt solution with bovine serum albumin", correct: false },
+                { text: "Cary-Blair medium", correct: false },
+            ]
+        },
+        {
+            question: "Throat swabs for Corynebacterium diphtheriae should be transported in:",
+            answers: [
+                { text: "Amies medium with charcoal", correct: true },
+                { text: "Stuart’s transport medium", correct: false },
+                { text: "Loeffler’s serum slope", correct: false },
+                { text: "Cary-Blair medium", correct: false },
+                { text: "Buffered glycerol saline", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is an example of innate (non-specific) immunity?",
+            answers: [
+                { text: "Skin barrier and gastric acidity", correct: true },
+                { text: "Antibody production after vaccination", correct: false },
+                { text: "Activation of cytotoxic T-cells", correct: false },
+                { text: "Memory B-cell activation", correct: false },
+                { text: "Complement fixation by antigen-antibody complex", correct: false },
+            ]
+        },
+        {
+            question: "The first step of phagocytosis is:",
+            answers: [
+                { text: "Chemotaxis", correct: true },
+                { text: "Digestion", correct: false },
+                { text: "Ingestion", correct: false },
+                { text: "Oxidative burst", correct: false },
+                { text: "Degranulation", correct: false },
+            ]
+        },
+        {
+            question: "The antibody class that crosses the placenta to provide neonatal immunity is:",
+            answers: [
+                { text: "IgG", correct: true },
+                { text: "IgA", correct: false },
+                { text: "IgM", correct: false },
+                { text: "IgE", correct: false },
+                { text: "IgD", correct: false },
+            ]
+        },
+        {
+            question: "Which immunoglobulin is primarily involved in mucosal immunity?",
+            answers: [
+                { text: "IgA", correct: true },
+                { text: "IgG", correct: false },
+                { text: "IgM", correct: false },
+                { text: "IgE", correct: false },
+                { text: "IgD", correct: false },
+            ]
+        },
+        {
+            question: "The main effector cell of cellular (cell-mediated) immunity is:",
+            answers: [
+                { text: "CD8+ cytotoxic T-cell", correct: true },
+                { text: "B lymphocyte", correct: false },
+                { text: "CD4+ helper T-cell", correct: false },
+                { text: "Mast cell", correct: false },
+                { text: "Plasma cell", correct: false },
+            ]
+        },
+        {
+            question: "The complement component primarily responsible for opsonization is:",
+            answers: [
+                { text: "C3b", correct: true },
+                { text: "C1", correct: false },
+                { text: "C4", correct: false },
+                { text: "C5a", correct: false },
+                { text: "C9", correct: false },
+            ]
+        },
+        {
+            question: "A patient develops antibodies after natural infection. This is an example of:",
+            answers: [
+                { text: "Natural active immunity", correct: true },
+                { text: "Passive immunity", correct: false },
+                { text: "Artificial passive immunity", correct: false },
+                { text: "Artificial active immunity", correct: false },
+                { text: "Cell-mediated immunity", correct: false },
+            ]
+        },
+        {
+            question: "The classical complement pathway is initiated when:",
+            answers: [
+                { text: "Antigen–antibody complex binds C1 component", correct: true },
+                { text: "C3 is directly activated on microbial surface", correct: false },
+                { text: "Mannose-binding lectin binds to bacterial polysaccharide", correct: false },
+                { text: "C5 binds to C6 forming MAC", correct: false },
+                { text: "Alternative pathway is triggered by endotoxin", correct: false },
+            ]
+        },
+        {
+            question: "In the reaction of bacteriolysis, which of the following components is essential along with antibody?",
+            answers: [
+                { text: "Complement system", correct: true },
+                { text: "Macrophages", correct: false },
+                { text: "T lymphocytes", correct: false },
+                { text: "Cytokines", correct: false },
+                { text: "Plasma cells", correct: false },
+            ]
+        },
+        {
+            question: "Hemolysin antibodies act on which type of cells?",
+            answers: [
+                { text: "Red blood cells", correct: true },
+                { text: "Bacteria", correct: false },
+                { text: "Lymphocytes", correct: false },
+                { text: "Platelets", correct: false },
+                { text: "Neutrophils", correct: false },
+            ]
+        },
+        {
+            question: "The direct ELISA is used for detection of:",
+            answers: [
+                { text: "Antigen in patient sample", correct: true },
+                { text: "Antibodies in patient serum", correct: false },
+                { text: "Complement levels", correct: false },
+                { text: "Cytokine receptor expression", correct: false },
+                { text: "Memory B-cell activation", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is the correct order of events in complement-mediated lysis?",
+            answers: [
+                { text: "Recognition → Activation → Amplification → Membrane attack", correct: true },
+                { text: "Recognition → Activation → Membrane attack → Amplification", correct: false },
+                { text: "Activation → Amplification → Recognition → Lysis", correct: false },
+                { text: "Amplification → Activation → Recognition → Lysis", correct: false },
+                { text: "Recognition → Membrane attack → Amplification → Activation", correct: false },
+            ]
+        },
+        {
+            question: "Immediate hypersensitivity (Type I reaction) is mediated by which of the following?",
+            answers: [
+                { text: "IgE and mast cells", correct: true },
+                { text: "IgG and complement", correct: false },
+                { text: "IgM and complement", correct: false },
+                { text: "T-lymphocytes", correct: false },
+                { text: "Immune complexes", correct: false },
+            ]
+        },
+        {
+            question: "The “late-phase reaction” of Type I hypersensitivity is mainly due to:",
+            answers: [
+                { text: "Neutrophil and eosinophil infiltration with cytokine release", correct: true },
+                { text: "Preformed histamine release", correct: false },
+                { text: "IgM-mediated complement activation", correct: false },
+                { text: "Direct cytotoxic T-cell action", correct: false },
+                { text: "Immune complex deposition", correct: false },
+            ]
+        },
+        {
+            question: "The most common laboratory test for diagnosing immediate allergic hypersensitivity is:",
+            answers: [
+                { text: "Skin prick (scratch) test", correct: true },
+                { text: "Patch test", correct: false },
+                { text: "Mantoux test", correct: false },
+                { text: "Coombs test", correct: false },
+                { text: "Ouchterlony gel diffusion test", correct: false },
+            ]
+        },
+        {
+            question: "The Coombs test detects which type of hypersensitivity?",
+            answers: [
+                { text: "Type II", correct: true },
+                { text: "Type I", correct: false },
+                { text: "Type III", correct: false },
+                { text: "Type IV", correct: false },
+                { text: "Type V", correct: false },
+            ]
+        },
+        {
+            question: "The tuberculin (Mantoux) test is an example of:",
+            answers: [
+                { text: "Type IV hypersensitivity", correct: true },
+                { text: "Type I hypersensitivity", correct: false },
+                { text: "Type III hypersensitivity", correct: false },
+                { text: "Type II hypersensitivity", correct: false },
+                { text: "Type V hypersensitivity", correct: false },
+            ]
+        },
+        {
+            question: "In serum sickness, the antigen–antibody complexes are deposited in which sites?",
+            answers: [
+                { text: "Basement membranes of vessels, joints, and kidneys", correct: true },
+                { text: "RBC membranes", correct: false },
+                { text: "Mast cell membranes", correct: false },
+                { text: "Epithelial cell junctions", correct: false },
+                { text: "Cytoplasmic receptors of lymphocytes", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following represents primary chemoprophylaxis?",
+            answers: [
+                { text: "Isoniazid given to household contacts of an active TB patient", correct: true },
+                { text: "Cotrimoxazole in HIV patient to prevent Pneumocystis infection", correct: false },
+                { text: "Benzathine penicillin to prevent recurrent rheumatic fever", correct: false },
+                { text: "Rifampicin to eliminate meningococcal carriage", correct: false },
+                { text: "Oseltamivir to shorten duration of influenza illness", correct: false },
+            ]
+        },
+        {
+            question: "Which mechanism of resistance is responsible for β-lactamase–mediated penicillin resistance in Staphylococcus aureus?",
+            answers: [
+                { text: "Enzymatic degradation of the drug", correct: true },
+                { text: "Target site mutation in ribosomal subunit", correct: false },
+                { text: "Altered DNA gyrase", correct: false },
+                { text: "Increased permeability of cell wall", correct: false },
+                { text: "Increased affinity of PBP to penicillin", correct: false },
+            ]
+        },
+        {
+            question: "The mechanism of resistance in Mycobacterium tuberculosis to isoniazid involves:",
+            answers: [
+                { text: "Mutation in catalase-peroxidase (katG) gene", correct: true },
+                { text: "β-lactamase production", correct: false },
+                { text: "Mutation in 23S rRNA", correct: false },
+                { text: "Drug efflux pumps only", correct: false },
+                { text: "Overproduction of target enzyme", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following vaccines is used for post-exposure prophylaxis (PEP)?",
+            answers: [
+                { text: "Tetanus toxoid and antitoxin", correct: true },
+                { text: "Hepatitis A vaccine", correct: false },
+                { text: "Polio vaccine", correct: false },
+                { text: "BCG", correct: false },
+                { text: "MMR vaccine", correct: false },
+            ]
+        },
+        {
+            question: "Which test best differentiates Staphylococcus aureus from other staphylococcal species?",
+            answers: [
+                { text: "Coagulase test", correct: true },
+                { text: "Catalase test", correct: false },
+                { text: "Oxidase test", correct: false },
+                { text: "Bacitracin sensitivity", correct: false },
+                { text: "Bile-esculin test", correct: false },
+            ]
+        },
+        {
+            question: "The most reliable specimen for laboratory diagnosis of Staphylococcus aureus bacteremia is:",
+            answers: [
+                { text: "Blood culture", correct: true },
+                { text: "Pus swab", correct: false },
+                { text: "Urine sample", correct: false },
+                { text: "Nasal swab", correct: false },
+                { text: "Throat swab", correct: false },
+            ]
+        },
+        {
+            question: "In suspected Neisseria meningitidis meningitis, the preferred diagnostic sample is:",
+            answers: [
+                { text: "CSF and blood", correct: true },
+                { text: "Urine", correct: false },
+                { text: "Sputum", correct: false },
+                { text: "Throat swab", correct: false },
+                { text: "Stool", correct: false },
+            ]
+        },
+        {
+            question: "Neisseria gonorrhoeae differs from N. meningitidis in that it:",
+            answers: [
+                { text: "Ferments only glucose", correct: true },
+                { text: "Is oxidase-negative", correct: false },
+                { text: "Ferments both glucose and maltose", correct: false },
+                { text: "Has a polysaccharide capsule", correct: false },
+                { text: "Is part of the normal throat flora", correct: false },
+            ]
+        },
+        {
+            question: "The medium of choice for isolating Neisseria gonorrhoeae is:",
+            answers: [
+                { text: "Thayer-Martin medium", correct: true },
+                { text: "Blood agar", correct: false },
+                { text: "MacConkey agar", correct: false },
+                { text: "Nutrient agar", correct: false },
+                { text: "Sabouraud agar", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following tests detects anti-streptolysin O antibodies in the patient’s serum?",
+            answers: [
+                { text: "ASO test", correct: true },
+                { text: "Coagulase test", correct: false },
+                { text: "Catalase test", correct: false },
+                { text: "Latex agglutination for CRP", correct: false },
+                { text: "VDRL", correct: false },
+            ]
+        },
+        {
+            question: "On MacConkey agar, which organism shows lactose fermentation (pink colonies)?",
+            answers: [
+                { text: "E. coli", correct: true },
+                { text: "Shigella", correct: false },
+                { text: "Salmonella", correct: false },
+                { text: "Proteus", correct: false },
+                { text: "Yersinia", correct: false },
+            ]
+        },
+        {
+            question: "Which culture medium is used for Vibrio cholerae, showing yellow colonies due to sucrose fermentation?",
+            answers: [
+                { text: "TCBS agar", correct: true },
+                { text: "MacConkey agar", correct: false },
+                { text: "XLD agar", correct: false },
+                { text: "Chocolate agar", correct: false },
+                { text: "Löwenstein-Jensen", correct: false },
+            ]
+        },
+        {
+            question: "Which organism is weakly acid-fast, aerobic and filamentous, usually causing pulmonary infections in immunocompromised patients?",
+            answers: [
+                { text: "Nocardia", correct: true },
+                { text: "Actinomyces", correct: false },
+                { text: "E. coli", correct: false },
+                { text: "Shigella dysenteriae", correct: false },
+                { text: "Proteus mirabilis", correct: false },
+            ]
+        },
+        {
+            question: "A patient with chronic cough shows acid-fast branching filamentous bacteria on microscopy. The most likely organism is:",
+            answers: [
+                { text: "Nocardia", correct: true },
+                { text: "Actinomyces", correct: false },
+                { text: "Corynebacterium", correct: false },
+                { text: "Salmonella", correct: false },
+                { text: "Shigella", correct: false },
+            ]
+        },
+        {
+            question: "Gas gangrene caused by C. perfringens is primarily due to which toxin?",
+            answers: [
+                { text: "Alpha-toxin (Lecithinase)", correct: true },
+                { text: "Neurotoxin", correct: false },
+                { text: "Beta-toxin", correct: false },
+                { text: "Tetanospasmin", correct: false },
+                { text: "Botulinum toxin", correct: false },
+            ]
+        },
+        {
+            question: "A patient presents with lockjaw (trismus), risus sardonicus, and muscle spasms after a contaminated wound. Which toxin is responsible?",
+            answers: [
+                { text: "Tetanospasmin", correct: true },
+                { text: "Endotoxin", correct: false },
+                { text: "Heat-labile enterotoxin", correct: false },
+                { text: "Botulinum neurotoxin", correct: false },
+                { text: "Alpha-lecithinase", correct: false },
+            ]
+        },
+        {
+            question: "Tetanus toxin acts on which part of the nervous system?",
+            answers: [
+                { text: "Inhibitory interneurons – blocks GABA and glycine", correct: true },
+                { text: "Neuromuscular junction – blocks ACh release", correct: false },
+                { text: "Motor end plate – causes depolarization", correct: false },
+                { text: "Myelin sheath – causes demyelination", correct: false },
+                { text: "Anterior horn cell – destroys motor neurons", correct: false },
+            ]
+        },
+        {
+            question: "Infant botulism commonly occurs after ingestion of which food source?",
+            answers: [
+                { text: "Honey", correct: true },
+                { text: "Contaminated fruits", correct: false },
+                { text: "Canned fish", correct: false },
+                { text: "Raw vegetables", correct: false },
+                { text: "Unpasteurized milk", correct: false },
+            ]
+        },
+        {
+            question: "A patient with gas gangrene is started on hyperbaric oxygen therapy. Which property of C. perfringens makes this treatment logical?",
+            answers: [
+                { text: "It is an obligate anaerobe lacking superoxide dismutase", correct: true },
+                { text: "It is aerobic and forms biofilm", correct: false },
+                { text: "It survives within granulomas", correct: false },
+                { text: "It is facultative anaerobe and urease-positive", correct: false },
+                { text: "It possesses catalase and cannot tolerate CO₂", correct: false },
+            ]
+        },
+        {
+            question: "A soldier presents with rapidly spreading myonecrosis, foul-smelling discharge, crepitus, and gas in soft tissues on X-ray. Which organism is most likely responsible?",
+            answers: [
+                { text: "Clostridium perfringens", correct: true },
+                { text: "Clostridium difficile", correct: false },
+                { text: "Clostridium tetani", correct: false },
+                { text: "Clostridium botulinum", correct: false },
+                { text: "Bacteroides fragilis", correct: false },
+            ]
+        },
+        {
+            question: "Which zoonotic pathogen is an intracellular facultative parasite that survives inside macrophages and causes granulomatous inflammation?",
+            answers: [
+                { text: "Brucella spp.", correct: true },
+                { text: "Listeria monocytogenes", correct: false },
+                { text: "Yersinia pestis", correct: false },
+                { text: "Bacillus anthracis", correct: false },
+                { text: "Vibrio vulnificus", correct: false },
+            ]
+        },
+        {
+            question: "A pregnant woman eating unpasteurized soft cheese develops fever and sepsis. Blood culture reveals a tumbling motile Gram-positive bacillus. Which organism is responsible?",
+            answers: [
+                { text: "Listeria monocytogenes", correct: true },
+                { text: "Bacillus anthracis", correct: false },
+                { text: "Brucella melitensis", correct: false },
+                { text: "Francisella tularensis", correct: false },
+                { text: "Yersinia pestis", correct: false },
+            ]
+        },
+        {
+            question: "A hunter develops an ulcer at the site of a rabbit bite with painful regional lymphadenopathy. Which culture medium is most suitable for the suspected organism?",
+            answers: [
+                { text: "Cysteine-glucose blood agar", correct: true },
+                { text: "Lowenstein–Jensen medium", correct: false },
+                { text: "Bordet–Gengou agar", correct: false },
+                { text: "TCBS agar", correct: false },
+                { text: "MacConkey agar", correct: false },
+            ]
+        },
+        {
+            question: "A patient from a rural area presents with high fever, painful swollen inguinal lymph nodes (buboes), and a history of rat flea exposure. Bipolar “safety pin”-shaped bacilli are seen on Wayson stain. What is the most likely diagnosis?",
+            answers: [
+                { text: "Plague", correct: true },
+                { text: "Tularemia", correct: false },
+                { text: "Brucellosis", correct: false },
+                { text: "Anthrax", correct: false },
+                { text: "Listeriosis", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following organisms is not visible on Gram staining, requires dark-field microscopy, and causes syphilis?",
+            answers: [
+                { text: "Treponema pallidum", correct: true },
+                { text: "Borrelia burgdorferi", correct: false },
+                { text: "Leptospira interrogans", correct: false },
+                { text: "Rickettsia prowazekii", correct: false },
+                { text: "Mycoplasma pneumoniae", correct: false },
+            ]
+        },
+        {
+            question: "Weil’s disease is most commonly associated with which exposure?",
+            answers: [
+                { text: "Contaminated water with rat urine", correct: true },
+                { text: "Tick bite", correct: false },
+                { text: "Unpasteurized milk", correct: false },
+                { text: "Sexual transmission", correct: false },
+                { text: "Flea bite", correct: false },
+            ]
+        },
+        {
+            question: "Rocky Mountain Spotted Fever (RMSF), transmitted by tick bite and producing a rash on wrists and ankles, is caused by:",
+            answers: [
+                { text: "Rickettsia rickettsii", correct: true },
+                { text: "Borrelia burgdorferi", correct: false },
+                { text: "Mycoplasma pneumoniae", correct: false },
+                { text: "Treponema pallidum", correct: false },
+                { text: "Leptospira biflexa", correct: false },
+            ]
+        },
+        {
+            question: "A patient with Lyme disease presents with erythema migrans. Which organism is responsible?",
+            answers: [
+                { text: "Borrelia burgdorferi", correct: true },
+                { text: "Treponema pallidum", correct: false },
+                { text: "Leptospira interrogans", correct: false },
+                { text: "Rickettsia prowazekii", correct: false },
+                { text: "Mycoplasma genitalium", correct: false },
+            ]
+        },
+        {
+            question: "A patient with high fever, jaundice, conjunctival suffusion, and renal failure after swimming in flood water is most likely infected with:",
+            answers: [
+                { text: "Leptospira interrogans", correct: true },
+                { text: "Borrelia burgdorferi", correct: false },
+                { text: "Treponema pallidum", correct: false },
+                { text: "Rickettsia prowazekii", correct: false },
+                { text: "Mycoplasma pneumoniae", correct: false },
+            ]
+        },
+        {
+            question: "Which of the following is the gold standard test for syphilis in early disease confirmation?",
+            answers: [
+                { text: "FTA-ABS", correct: true },
+                { text: "VDRL", correct: false },
+                { text: "RPR", correct: false },
+                { text: "Weil–Felix", correct: false },
+                { text: "MacConkey culture", correct: false },
+            ]
+        },
+        {
+            question: "Which virus is most commonly associated with croup (barking cough) and inspiratory stridor in children?",
+            answers: [
+                { text: "Parainfluenza virus", correct: true },
+                { text: "Influenza A", correct: false },
+                { text: "Adenovirus type 8", correct: false },
+                { text: "SARS-CoV-2", correct: false },
+                { text: "Cytomegalovirus", correct: false },
+            ]
+        },
+        {
+            question: "Which virus commonly causes pharyngoconjunctival fever (PCF), especially in swimming pools?",
+            answers: [
+                { text: "Adenovirus", correct: true },
+                { text: "Influenza B virus", correct: false },
+                { text: "Human Parainfluenza virus", correct: false },
+                { text: "SARS-CoV-2", correct: false },
+                { text: "Respiratory Syncytial Virus", correct: false },
+            ]
+        },
+        {
+            question: "Antigenic shift in Influenza A occurs due to:",
+            answers: [
+                { text: "Reassortment of viral RNA segments", correct: true },
+                { text: "Point mutations in HA gene", correct: false },
+                { text: "Release of neuraminidase", correct: false },
+                { text: "Integration into host chromosome", correct: false },
+                { text: "Lack of envelope", correct: false },
+            ]
+        },
+        {
+            question: "Which structural feature is unique to Orthomyxoviruses compared to Paramyxoviruses?",
+            answers: [
+                { text: "Segmented negative-sense RNA genome", correct: true },
+                { text: "Non-segmented RNA", correct: false },
+                { text: "Positive-sense RNA", correct: false },
+                { text: "Double-stranded DNA genome", correct: false },
+                { text: "Icosahedral capsid", correct: false },
+            ]
+        },
+        {
+            question: "A DNA virus causing acute respiratory syndrome with non-enveloped icosahedral structure and ability to survive on surfaces for long time is:",
+            answers: [
+                { text: "Adenovirus", correct: true },
+                { text: "RSV", correct: false },
+                { text: "Influenza A", correct: false },
+                { text: "SARS-CoV-2", correct: false },
+                { text: "Parainfluenza", correct: false },
+            ]
+        },
+        {
+            question: "A 4-year-old child presents with fever, cough, hoarseness of voice, and a characteristic steeple sign on neck X-ray. Which viral feature best explains its ability to cause syncytia formation in the respiratory tract?",
+            answers: [
+                { text: "Fusion (F) protein on the viral envelope", correct: true },
+                { text: "RNA polymerase error rate", correct: false },
+                { text: "S-protein receptor binding", correct: false },
+                { text: "Neuraminidase antigen", correct: false },
+                { text: "Hemagglutinin cleavage", correct: false },
+            ]
+        },
+        {
+            question: "Poliovirus belongs to which viral family and exhibits which genome structure?",
+            answers: [
+                { text: "Picornaviridae; non-segmented positive-sense RNA", correct: true },
+                { text: "Adenoviridae; double-stranded DNAq", correct: false },
+                { text: "Reoviridae; double-stranded segmented RNAq", correct: false },
+                { text: "Retroviridae; single-stranded positive-sense RNA with reverse transcriptase", correct: false },
+                { text: "Orthomyxoviridae; segmented negative-sense RNA", correct: false },
+            ]
+        },
+        {
+            question: "The primary site of replication of poliovirus after entry through the fecal-oral route is:",
+            answers: [
+                { text: "Lymphoid tissue of oropharynx and intestine", correct: true },
+                { text: "Spleen", correct: false },
+                { text: "Skin and subcutaneous tissue", correct: false },
+                { text: "Cerebral cortex", correct: false },
+                { text: "Anterior horn cells directly", correct: false },
+            ]
+        },
+        {
+            question: "Which diagnostic test is MOST commonly used for confirmation of poliovirus infection during epidemics?",
+            answers: [
+                { text: "Cell culture + RT-PCR from stool sample", correct: true },
+                { text: "Rapid antigen test from throat swab", correct: false },
+                { text: "VDRL test", correct: false },
+                { text: "CFT (Complement Fixation Test)", correct: false },
+                { text: "Latex agglutination test", correct: false },
+            ]
+        },
+        {
+            question: "Echoviruses (ESNO group) are most commonly associated with which clinical presentation?",
+            answers: [
+                { text: "Meningitis and febrile illness in children", correct: true },
+                { text: "Shingles", correct: false },
+                { text: "Measles-like rash with Koplik spots", correct: false },
+                { text: "Hemorrhagic fever", correct: false },
+                { text: "Whooping cough", correct: false },
+            ]
+        },
+        {
+            question: "Paralysis in poliomyelitis is due to destruction of:",
+            answers: [
+                { text: "Anterior horn cells of spinal cord", correct: true },
+                { text: "Posterior root ganglia", correct: false },
+                { text: "Cerebellar Purkinje cells", correct: false },
+                { text: "Medullary motor nuclei only", correct: false },
+                { text: "Neuromuscular junction receptors", correct: false },
+            ]
+        },
+        {
+            question: "A child presents with herpangina, HFMD, and mild diarrhea. Which virus is the most likely cause?",
+            answers: [
+                { text: "Coxsackievirus A", correct: true },
+                { text: "Rubella virus", correct: false },
+                { text: "Parvovirus B19", correct: false },
+                { text: "HSV-1", correct: false },
+                { text: "Poliovirus type 1", correct: false },
+            ]
+        },
+        {
+            question: "A 9-year-old child presents with tender parotid swelling and orchitis. Which RNA virus is the likely cause?",
+            answers: [
+                { text: "Rubulavirus", correct: true },
+                { text: "HSV-1", correct: false },
+                { text: "CMV", correct: false },
+                { text: "Rubella virus", correct: false },
+                { text: "Varicella-zoster virus", correct: false },
+            ]
+        },
+        {
+            question: "A child with mild fever, post-auricular lymphadenopathy, and a maculopapular rash, along with Forchheimer spots, is most likely suffering from:",
+            answers: [
+                { text: "Rubella", correct: true },
+                { text: "Varicella", correct: false },
+                { text: "Mumps", correct: false },
+                { text: "Roseola", correct: false },
+                { text: "Measles", correct: false },
+            ]
+        },
+        {
+            question: "A vesicular rash appearing as “dew-drop on a rose petal” is characteristic of:",
+            answers: [
+                { text: "Varicella-zoster virus", correct: true },
+                { text: "Measles virus", correct: false },
+                { text: "Parvovirus B19", correct: false },
+                { text: "EBV", correct: false },
+                { text: "HSV-2", correct: false },
+            ]
+        },
+        {
+            question: "Owl’s eye intranuclear inclusions on biopsy are diagnostic of:",
+            answers: [
+                { text: "Cytomegalovirus", correct: true },
+                { text: "Rubella", correct: false },
+                { text: "Measles", correct: false },
+                { text: "Mumps", correct: false },
+                { text: "HSV-2 infection", correct: false },
+            ]
+        },
+        {
+            question: "A neonate born with cataracts, PDA and sensorineural deafness is an example of which vertical infection?",
+            answers: [
+                { text: "Congenital rubella", correct: true },
+                { text: "Congenital varicella", correct: false },
+                { text: "Neonatal EBV", correct: false },
+                { text: "HSV-2 neonatal infection", correct: false },
+                { text: "Congenital CMV", correct: false },
+            ]
+        },
+        {
+            question: "A 6-year-old child presents with high fever, conjunctivitis, cough, and Koplik spots on buccal mucosa, followed by a maculopapular rash spreading from face → trunk → limbs. The causative virus belongs to which family?",
+            answers: [
+                { text: "Paramyxoviridae", correct: true },
+                { text: "Poxviridae", correct: false },
+                { text: "Retroviridae", correct: false },
+                { text: "Togaviridae", correct: false },
+                { text: "Herpesviridae", correct: false },
+            ]
+        },
+        {
+            question: "Crimean-Congo hemorrhagic fever (CCHF) is transmitted primarily through:",
+            answers: [
+                { text: "Hard ticks", correct: true },
+                { text: "Bat saliva", correct: false },
+                { text: "Rodent urine", correct: false },
+                { text: "Aedes mosquito bite", correct: false },
+                { text: "Culex mosquito bite", correct: false },
+            ]
+        },
+        {
+            question: "Tick-borne encephalitis (TBE) virus belongs to which viral family?",
+            answers: [
+                { text: "Flaviviridae", correct: true },
+                { text: "Hepadnaviridae", correct: false },
+                { text: "Arenaviridae", correct: false },
+                { text: "Orthomyxoviridae", correct: false },
+                { text: "Bunyaviridae", correct: false },
+            ]
+        },
+        {
+            question: "A patient develops encephalitis after a tick bite in Eastern Europe. CSF shows lymphocytes with mildly elevated protein. Which is the best confirmatory test?",
+            answers: [
+                { text: "IgM ELISA or RT-PCR for TBEV", correct: true },
+                { text: "Dark-field microscopy", correct: false },
+                { text: "Complement fixation test", correct: false },
+                { text: "Weil–Felix test", correct: false },
+                { text: "Tzanck smear", correct: false },
+            ]
+        },
+        {
+            question: "Japanese encephalitis virus causes neuronal damage predominantly in which part of the CNS?",
+            answers: [
+                { text: "Basal ganglia and thalamus", correct: true },
+                { text: "Brainstem nuclei", correct: false },
+                { text: "Spinal cord anterior horn cells", correct: false },
+                { text: "Cerebellar Purkinje cells", correct: false },
+                { text: "Cerebral cortex", correct: false },
+            ]
+        },
+        {
+            question: "A farmer develops fever, severe myalgia, conjunctival bleeding, and later shock after a tick bite. RT-PCR confirms the diagnosis. Which family does this virus belong to?",
+            answers: [
+                { text: "Nairoviridae", correct: true },
+                { text: "Retroviridae", correct: false },
+                { text: "Picornaviridae", correct: false },
+                { text: "Togaviridae", correct: false },
+                { text: "Flaviviridae", correct: false },
+            ]
+        },
+        {
+            question: "Which viral infection is MOST associated with long-term neurological sequelae such as movement disorders, cognitive deficits, and epilepsy in survivors?",
+            answers: [
+                { text: "Japanese Encephalitis", correct: true },
+                { text: "Rubella", correct: false },
+                { text: "Lassa fever", correct: false },
+                { text: "Mumps", correct: false },
+                { text: "RSV bronchiolitis", correct: false },
+            ]
+        },
+        {
+            question: "Councilman bodies seen in liver biopsy are associated with:",
+            answers: [
+                { text: "Yellow fever", correct: true },
+                { text: "Zika", correct: false },
+                { text: "Smallpox", correct: false },
+                { text: "Rabies", correct: false },
+                { text: "Ebola", correct: false },
+            ]
+        },
+        {
+            question: "A traveler with jaundice, fever, bleeding gums, and “black vomit” likely has:",
+            answers: [
+                { text: "Yellow fever", correct: true },
+                { text: "Rabies", correct: false },
+                { text: "Ebola", correct: false },
+                { text: "Mumps", correct: false },
+                { text: "Zika fever", correct: false },
+            ]
+        },
+        {
+            question: "Which diagnostic test is commonly used for early ante-mortem diagnosis of rabies in humans?",
+            answers: [
+                { text: "DFA or PCR from nuchal skin biopsy/saliva", correct: true },
+                { text: "Mantoux test", correct: false },
+                { text: "ELISA IgG only", correct: false },
+                { text: "Weil–Felix test", correct: false },
+                { text: "Viral culture on blood agar", correct: false },
+            ]
+        },
+        {
+            question: "What is the most important laboratory method for confirming smallpox (Variola) in a suspected sample?",
+            answers: [
+                { text: "PCR from lesion material", correct: true },
+                { text: "Blood culture", correct: false },
+                { text: "Tzanck smear", correct: false },
+                { text: "Widal test", correct: false },
+                { text: "VDRL test", correct: false },
+            ]
+        },
+        {
+            question: "A healthcare worker handling body fluids from an outbreak develops severe hemorrhagic fever, DIC and shock. The causative virus has a filamentous appearance under EM. Which virus is most likely?",
+            answers: [
+                { text: "Ebola virus", correct: true },
+                { text: "Zika virus", correct: false },
+                { text: "Variola virus", correct: false },
+                { text: "Rabies virus", correct: false },
+                { text: "Chikungunya virus", correct: false },
+            ]
+        },
+        {
+            question: "A man bitten by a stray dog develops hydrophobia, aerophobia, and progressive neurologic symptoms. Which diagnostic finding is characteristic on autopsy?",
+            answers: [
+                { text: "Negri bodies in hippocampus", correct: true },
+                { text: "Cowdry type A inclusions", correct: false },
+                { text: "Councilman bodies", correct: false },
+                { text: "Guarnieri bodies", correct: false },
+                { text: "Tzanck giant cells", correct: false },
+            ]
+        },
+        {
+            question: "Which stain is commonly used to demonstrate fungal hyphae in tissue samples?",
+            answers: [
+                { text: "Lactophenol cotton blue", correct: true },
+                { text: "Albert stain", correct: false },
+                { text: "Gram stain", correct: false },
+                { text: "India ink only", correct: false },
+                { text: "Leishman stain", correct: false },
+            ]
+        },
+        {
+            question: "In a patient with allergic bronchopulmonary aspergillosis (ABPA), which species is most commonly involved?",
+            answers: [
+                { text: "Aspergillus fumigatus", correct: true },
+                { text: "Aspergillus niger", correct: false },
+                { text: "Penicillium marneffei", correct: false },
+                { text: "Rhizopus spp.", correct: false },
+                { text: "Aspergillus flavus", correct: false },
+            ]
+        },
+        {
+            question: "The microscopic morphology of Aspergillus is best described as:",
+            answers: [
+                { text: "Septate hyphae with acute angle (45°) branching", correct: true },
+                { text: "Broad non-septate hyphae branching at 90°", correct: false },
+                { text: "Dimorphic yeast at body temperature", correct: false },
+                { text: "Spherules with endospores", correct: false },
+                { text: "Club-shaped budding yeast", correct: false },
+            ]
+        },
+        {
+            question: "A fungus showing blue-green velvety colonies with septate hyphae and flask-shaped phialides arranged like a “brush” is most likely:",
+            answers: [
+                { text: "Penicillium spp.", correct: true },
+                { text: "Aspergillus flavus", correct: false },
+                { text: "Rhizopus", correct: false },
+                { text: "Candida tropicalis", correct: false },
+                { text: "Cryptococcus", correct: false },
+            ]
+        },
+        {
+            question: "A patient with healed tuberculosis cavity develops hemoptysis. CT scan shows a mobile radiopaque mass that moves with position change (air-crescent sign). The MOST likely diagnosis is:",
+            answers: [
+                { text: "Aspergilloma", correct: true },
+                { text: "Pneumocystis jirovecii pneumonia", correct: false },
+                { text: "Mucormycosis", correct: false },
+                { text: "Penicilliosis", correct: false },
+                { text: "Nocardiosis", correct: false },
+            ]
+        },
+        {
+            question: "Which fungal component is the target of Echinocandins during treatment of mold infections?",
+            answers: [
+                { text: "Glucan synthesis in cell wall", correct: true },
+                { text: "Ergosterol in membrane", correct: false },
+                { text: "Chitin polymerase in cell wall", correct: false },
+                { text: "RNA replication enzyme", correct: false },
+                { text: "Microtubule formation", correct: false },
+            ]
+        },
+        {
+            question: "Which dermatophyte species predominantly infects skin and nails but rarely infects hair?",
+            answers: [
+                { text: "Epidermophyton", correct: true },
+                { text: "Microsporum", correct: false },
+                { text: "Trichophyton", correct: false },
+                { text: "Mucor", correct: false },
+                { text: "Rhizopus", correct: false },
+            ]
+        },
+        {
+            question: "Wood’s lamp examination showing blue-green fluorescence of infected hair is most characteristic of:",
+            answers: [
+                { text: "Microsporum canis/audouinii", correct: true },
+                { text: "Mucor spp.", correct: false },
+                { text: "Aspergillus flavus", correct: false },
+                { text: "Trichophyton rubrum", correct: false },
+                { text: "Trichophyton tonsurans", correct: false },
+            ]
+        },
+        {
+            question: "A KOH mount from a suspected tinea capitis patient shows ectothrix hair invasion. Which genus is MOST consistent with this finding?",
+            answers: [
+                { text: "Microsporum", correct: true },
+                { text: "Candida", correct: false },
+                { text: "Mucor", correct: false },
+                { text: "Trichosporon", correct: false },
+                { text: "Penicillium", correct: false },
+            ]
+        },
+        {
+            question: "A patient presents with tinea corporis (ringworm) showing central clearing and an advancing scaly border. Which fungal genus is MOST commonly responsible?",
+            answers: [
+                { text: "Trichophyton", correct: true },
+                { text: "Cryptococcus", correct: false },
+                { text: "Candida", correct: false },
+                { text: "Sporothrix", correct: false },
+                { text: "Aspergillus", correct: false },
+            ]
+        },
+        {
+            question: "Dimorphic fungi exist in which form at 37°C in human tissue?",
+            answers: [
+                { text: "Yeast form", correct: true },
+                { text: "Hyphae only", correct: false },
+                { text: "Spherule form only", correct: false },
+                { text: "Mold only", correct: false },
+                { text: "Aseptate hyphae", correct: false },
+            ]
+        },
+        {
+            question: "A dimorphic fungus that grows as tuberculate macroconidia on Sabouraud agar is:",
+            answers: [
+                { text: "Histoplasma capsulatum", correct: true },
+                { text: "Coccidioides immitis", correct: false },
+                { text: "Blastomyces dermatitidis", correct: false },
+                { text: "Aspergillus fumigatus", correct: false },
+                { text: "Candida krusei", correct: false },
+            ]
+        },
+        {
+            question: "Which fungus grows as a mold with barrel-shaped arthroconidia in culture?",
+            answers: [
+                { text: "Coccidioides", correct: true },
+                { text: "Histoplasma", correct: false },
+                { text: "Candida", correct: false },
+                { text: "Rhizopus", correct: false },
+                { text: "Blastomyces", correct: false },
+            ]
+        },
+        {
+            question: "All of the following statements about dimorphic fungi are true EXCEPT:",
+            answers: [
+                { text: "They are transmitted person-to-person", correct: true },
+                { text: "They can mimic TB clinically", correct: false },
+                { text: "They cause systemic mycoses", correct: false },
+                { text: "They are mold at 25°C", correct: false },
+                { text: "They are yeast at 37°C", correct: false },
+            ]
+        },
+        {
+            question: "A farmer presents with chronic cough and verrucous skin lesions. BAL (bronchoalveolar lavage) shows thick-walled broad-based budding yeast, and chest X-ray shows upper-lobe infiltrates. Diagnosis?",
+            answers: [
+                { text: "Blastomycosis", correct: true },
+                { text: "Coccidioidomycosis", correct: false },
+                { text: "Actinomycosis", correct: false },
+                { text: "Histoplasmosis", correct: false },
+                { text: "Aspergillosis", correct: false },
+            ]
+        },
+        {
+            question: "Which fungal pathogen is commonly associated with outbreaks among people living in Southwestern United States (Arizona, California) and is diagnosed by spherules on tissue biopsy?",
+            answers: [
+                { text: "Coccidioides", correct: true },
+                { text: "Cryptococcus", correct: false },
+                { text: "Mucor", correct: false },
+                { text: "Histoplasma", correct: false },
+                { text: "Blastomyces", correct: false },
+            ]
+        },
+        {
+            question: "A vaginal swab shows pseudohyphae with budding yeast cells on microscopy. Which organism is responsible?",
+            answers: [
+                { text: "Candida albicans", correct: true },
+                { text: "Pneumocystis jirovecii", correct: false },
+                { text: "Cryptococcus gattii", correct: false },
+                { text: "Madurella mycetomatis", correct: false },
+                { text: "Coccidioides", correct: false },
+            ]
+        },
+        {
+            question: "A farmer presents with swelling of the foot, multiple sinuses, and discharge of black granules, most likely due to:",
+            answers: [
+                { text: "Madurella mycetomatis", correct: true },
+                { text: "Cryptococcus", correct: false },
+                { text: "Candida albicans", correct: false },
+                { text: "Pneumocystis jirovecii", correct: false },
+                { text: "Actinomyces israelii", correct: false },
+            ]
+        },
+        {
+            question: "An AIDS patient develops progressive dyspnea and ground-glass infiltrates on chest X-ray. Bronchoalveolar lavage shows cup-shaped cysts on silver stain. What is the diagnosis?",
+            answers: [
+                { text: "Pneumocystis jirovecii pneumonia", correct: true },
+                { text: "Blastomycosis", correct: false },
+                { text: "Rhinosporidiosis", correct: false },
+                { text: "Cryptococcosis", correct: false },
+                { text: "Aspergillosis", correct: false },
+            ]
+        },
+        {
+            question: "Which antifungal is preferred for Cryptococcal meningitis induction therapy in AIDS patients?",
+            answers: [
+                { text: "Amphotericin-B + Flucytosine", correct: true },
+                { text: "Ketoconazole", correct: false },
+                { text: "Nystatin", correct: false },
+                { text: "Itraconazole", correct: false },
+                { text: "Fluconazole alone", correct: false },
+            ]
+        },
+        {
+            question: "Infection with Cryptosporidium parvum is MOST commonly acquired through:",
+            answers: [
+                { text: "Ingestion of oocysts from contaminated water", correct: true },
+                { text: "Tick bites", correct: false },
+                { text: "Sexual transmission only", correct: false },
+                { text: "Cat feces", correct: false },
+                { text: "Sandfly bites", correct: false },
+            ]
+        },
+        {
+            question: "Isospora belli infection is best identified by:",
+            answers: [
+                { text: "Modified acid-fast staining of oocysts in stool", correct: true },
+                { text: "Giemsa stain of blood", correct: false },
+                { text: "Vaginal wet mount", correct: false },
+                { text: "Culture on charcoal medium", correct: false },
+                { text: "KOH mount", correct: false },
+            ]
+        },
+        {
+            question: "Which drug is the treatment of choice for Trichomonas vaginalis infection?",
+            answers: [
+                { text: "Metronidazole (for both partners)", correct: true },
+                { text: "Amphotericin B", correct: false },
+                { text: "TMP-SMX", correct: false },
+                { text: "Nitazoxanide", correct: false },
+                { text: "Ivermectin", correct: false },
+            ]
+        },
+        {
+            question: "An HIV patient presents with profuse watery diarrhea. Stool modified acid-fast stain shows red oocysts under the microscope. What is the most likely organism?",
+            answers: [
+                { text: "Cryptosporidium parvum", correct: true },
+                { text: "Giardia lamblia", correct: false },
+                { text: "Trichomonas vaginalis", correct: false },
+                { text: "Balantidium coli", correct: false },
+                { text: "Entamoeba histolytica", correct: false },
+            ]
+        },
+        {
+            question: "A sexually active woman develops frothy green vaginal discharge and strawberry cervix. Motile trophozoites are seen on wet mount. Identify the parasite.",
+            answers: [
+                { text: "Trichomonas vaginalis", correct: true },
+                { text: "Balantidium coli", correct: false },
+                { text: "Giardia lamblia", correct: false },
+                { text: "Leishmania donovani", correct: false },
+                { text: "Toxoplasma gondii", correct: false },
+            ]
+        },
+        {
+            question: "A patient presents with bloody diarrhea and flask-shaped ulcers on colon biopsy. Trophozoites with ingested RBCs are seen in stool. What is the most likely organism?",
+            answers: [
+                { text: "Entamoeba histolytica", correct: true },
+                { text: "Balantidium coli", correct: false },
+                { text: "Isospora belli", correct: false },
+                { text: "Giardia lamblia", correct: false },
+                { text: "Cryptosporidium parvum", correct: false },
+            ]
+        },
+        {
+            question: "An ulcer with raised borders on the skin after a sandfly bite is most likely due to:",
+            answers: [
+                { text: "Leishmania tropica", correct: true },
+                { text: "Toxoplasma gondii", correct: false },
+                { text: "Trypanosoma cruzi", correct: false },
+                { text: "Plasmodium vivax", correct: false },
+                { text: "Babesia microti", correct: false },
+            ]
+        },
+        {
+            question: "Plasmodium falciparum infection can be recognized on peripheral smear by:",
+            answers: [
+                { text: "Multiple ring forms per RBC + banana-shaped gametocytes", correct: true },
+                { text: "Oval RBC with fimbriated edges", correct: false },
+                { text: "Maltese cross forms", correct: false },
+                { text: "Schuffner’s dots", correct: false },
+                { text: "Band-shaped trophozoites", correct: false },
+            ]
+        },
+        {
+            question: "Which Plasmodium species shows 72-hour fever cycle (quartan malaria)?",
+            answers: [
+                { text: "P. malariae", correct: true },
+                { text: "P. ovale", correct: false },
+                { text: "P. knowlesi", correct: false },
+                { text: "P. falciparum", correct: false },
+                { text: "P. vivax", correct: false },
+            ]
+        },
+        {
+            question: "Winterbottom’s sign (posterior cervical lymphadenopathy) is seen in:",
+            answers: [
+                { text: "Trypanosoma brucei", correct: true },
+                { text: "L. tropica", correct: false },
+                { text: "P. malariae", correct: false },
+                { text: "Toxoplasma gondii", correct: false },
+                { text: "P. falciparum", correct: false },
+            ]
+        },
+        {
+            question: "A patient from rural South America presents with megaesophagus and megacolon. The causative agent is transmitted by the reduviid (kissing) bug. What is the disease?",
+            answers: [
+                { text: "Chagas disease", correct: true },
+                { text: "African trypanosomiasis", correct: false },
+                { text: "Malaria", correct: false },
+                { text: "Babesiosis", correct: false },
+                { text: "Kala-azar", correct: false },
+            ]
+        },
+        {
+            question: "A traveler from West Africa presents with recurrent fever, lymphadenopathy, and day-time somnolence progressing to coma. A trypomastigote is found in blood smear. What is the most likely organism?",
+            answers: [
+                { text: "Trypanosoma brucei", correct: true },
+                { text: "Trypanosoma cruzi", correct: false },
+                { text: "Plasmodium malariae", correct: false },
+                { text: "Toxoplasma gondii", correct: false },
+                { text: "Leishmania donovani", correct: false },
+            ]
+        },
+        {
+            question: "Loa loa microfilariae are best detected by:",
+            answers: [
+                { text: "Daytime peripheral blood smear", correct: true },
+                { text: "CSF examination", correct: false },
+                { text: "Urine wet mount", correct: false },
+                { text: "Early morning sputum test", correct: false },
+                { text: "Night blood sample", correct: false },
+            ]
+        },
+        {
+            question: "Which nematode follows the Lung migration (Löffler’s syndrome) during its life cycle?",
+            answers: [
+                { text: "Ascaris lumbricoides", correct: true },
+                { text: "Loa loa", correct: false },
+                { text: "Enterobius vermicularis", correct: false },
+                { text: "Trichinella spiralis", correct: false },
+                { text: "Strongyloides stercoralis", correct: false },
+            ]
+        },
+        {
+            question: "A child presents with nocturnal perianal itching, irritability, and insomnia. Which is the MOST appropriate treatment?",
+            answers: [
+                { text: "Albendazole or Mebendazole", correct: true },
+                { text: "Ivermectin", correct: false },
+                { text: "Praziquantel", correct: false },
+                { text: "Metronidazole", correct: false },
+                { text: "Amphotericin B", correct: false },
+            ]
+        },
+        {
+            question: "In Trichinella spiralis, which laboratory feature is classically seen in the blood?",
+            answers: [
+                { text: "Neutropenia", correct: true },
+                { text: "Eosinophilia", correct: false },
+                { text: "Basophilia", correct: false },
+                { text: "Thrombocytopenia", correct: false },
+                { text: "Lymphocytosis", correct: false },
+            ]
+        },
+        {
+            question: "A patient from West Africa presents with Calabar swelling and a worm passed across the eye (subconjunctival migration). The infection is transmitted by Chrysops (mango fly). What is the diagnosis?",
+            answers: [
+                { text: "Loiasis (Loa loa)", correct: true },
+                { text: "Ascariasis", correct: false },
+                { text: "Enterobiasis", correct: false },
+                { text: "Onchocerciasis", correct: false },
+                { text: "Trichinellosis", correct: false },
+            ]
+        },
+        {
+            question: "A patient who ate undercooked pork develops myalgia, fever, periorbital edema, and eosinophilia. The most likely parasite is:",
+            answers: [
+                { text: "Trichinella spiralis", correct: true },
+                { text: "Loa loa", correct: false },
+                { text: "Ascaris lumbricoides", correct: false },
+                { text: "Wuchereria bancrofti", correct: false },
+                { text: "Enterobius vermicularis", correct: false },
+            ]
+        },
+        {
+            question: "A shepherd presents with liver cyst containing “hydatid sand” on aspiration and ultrasound showing daughter cysts. The parasite involved is:",
+            answers: [
+                { text: "Echinococcus granulosus", correct: true },
+                { text: "Hymenolepis nana", correct: false },
+                { text: "Diphyllobothrium latum", correct: false },
+                { text: "Taenia saginata", correct: false },
+                { text: "Taenia solium", correct: false },
+            ]
+        },
+        {
+            question: "Which diagnostic method is most useful for hydatid disease?",
+            answers: [
+                { text: "Casoni intradermal test and imaging", correct: true },
+                { text: "Stool wet mount only", correct: false },
+                { text: "Sputum ZN stain", correct: false },
+                { text: "Blood culture", correct: false },
+                { text: "Wood’s lamp test", correct: false },
+            ]
+        },
+        {
+            question: "An adult worm of Diphyllobothrium latum is characterized by:",
+            answers: [
+                { text: "Bothria (sucking grooves) on scolex", correct: true },
+                { text: "Barrel-shaped ova with polar plugs", correct: false },
+                { text: "Hydatid sand in cyst", correct: false },
+                { text: "Scolex with hooklets & suckers", correct: false },
+                { text: "Leaf-shaped body with operculated eggs", correct: false },
+            ]
+        },
+        {
+            question: "The infective form of Echinococcus granulosus for humans is:",
+            answers: [
+                { text: "Egg containing oncosphere", correct: true },
+                { text: "Coracidium larva", correct: false },
+                { text: "Embryonated egg of H. nana", correct: false },
+                { text: "Cyclops larva", correct: false },
+                { text: "Cysticercus", correct: false },
+            ]
+        },
+        {
+            question: "A vegetarian patient passes proglottids in stool. The scolex has four suckers but no hooklets. What is the most likely diagnosis?",
+            answers: [
+                { text: "Taenia saginata", correct: true },
+                { text: "Taenia solium", correct: false },
+                { text: "Diphyllobothrium latum", correct: false },
+                { text: "Echinococcus granulosus", correct: false },
+                { text: "Hymenolepis diminuta", correct: false },
+            ]
+        },
+        {
+            question: "A child presents with abdominal pain and stool examination shows thin-shelled eggs containing polar filaments. The most likely parasite is:",
+            answers: [
+                { text: "Hymenolepis nana", correct: true },
+                { text: "Taenia saginata", correct: false },
+                { text: "Diphyllobothrium latum", correct: false },
+                { text: "Echinococcus granulosus", correct: false },
+                { text: "Taenia solium", correct: false },
+            ]
+        },
+        ];
+
+        // Quiz state
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let isExamMode = false;
+        let isDarkMode = false;
+        let isAnswerMode = false;
+        let isQuestionShuffleMode = false; // NEW: Question shuffle mode for non-exam
+        let isQuestionShuffleEnabled = false; // NEW: Question shuffle for exam mode
+        let timerInterval = null;
+        let timerActive = false;
+        let timerExpired = false;
+        let totalQuestions = questions.length;
+        let selectedQuestionCount = questions.length;
+        let examGridExpanded = true;
+        let originalQuestionOrder = []; // NEW: Store original question order
+        let shuffledQuestionOrder = []; // NEW: Store shuffled question order
+        let currentQuestionOrder = []; // NEW: Current active question order
+
+        // NEW: Shuffle array function
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // NEW: Shuffle options for a question
+        function shuffleQuestionOptions(question) {
+            const shuffledAnswers = shuffleArray(question.answers);
+            return {
+                ...question,
+                answers: shuffledAnswers
+            };
+        }
+
+        // Initialize quiz
+        function initializeQuiz() {
+            // Initialize question orders
+            originalQuestionOrder = Array.from({length: questions.length}, (_, i) => i);
+            shuffledQuestionOrder = shuffleArray(originalQuestionOrder);
+            currentQuestionOrder = [...originalQuestionOrder];
+            
+            userAnswers = new Array(questions.length).fill(null);
+            loadQuestion();
+            createQuestionGrid();
+            createMobileQuestionGrid();
+            createExamQuestionGrid();
+            updateNavigationButtons();
+        }
+
+        // Load current question with option shuffling
+        function loadQuestion() {
+            const questionIndex = currentQuestionOrder[currentQuestionIndex];
+            const originalQuestion = questions[questionIndex];
+            
+            // NEW: Always shuffle options when loading a question
+            const question = shuffleQuestionOptions(originalQuestion);
+            
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}`;
+            document.getElementById('questionCounter').textContent = `${currentQuestionIndex + 1} / ${selectedQuestionCount}`;
+            document.getElementById('questionText').textContent = question.question;
+
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+
+            question.answers.forEach((answer, index) => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'answer-option';
+                answerDiv.onclick = () => selectAnswer(index, answer.correct);
+
+                const optionLabel = document.createElement('div');
+                optionLabel.className = 'option-label';
+                optionLabel.textContent = String.fromCharCode(65 + index); // A, B, C, D
+
+                const optionText = document.createElement('div');
+                optionText.className = 'option-text';
+                optionText.textContent = answer.text;
+
+                answerDiv.appendChild(optionLabel);
+                answerDiv.appendChild(optionText);
+                answersContainer.appendChild(answerDiv);
+
+                // Restore previous selection
+                if (userAnswers[questionIndex] !== null && userAnswers[questionIndex].selectedIndex === index) {
+                    answerDiv.classList.add('selected');
+                }
+
+                // Apply answer mode styling if active and not in exam mode
+                if (isAnswerMode && !isExamMode) {
+                    if (answer.correct) {
+                        answerDiv.classList.add('correct-answer-mode');
+                    } else {
+                        answerDiv.classList.add('other-answer-mode');
+                    }
+                }
+
+                // Apply timer expired styling
+                if (timerExpired) {
+                    answerDiv.classList.add('timer-expired');
+                }
+            });
+
+            updateQuestionGrid();
+            updateMobileQuestionGrid();
+            updateExamQuestionGrid();
+        }
+
+        // Select answer with correct answer tracking
+        function selectAnswer(answerIndex, isCorrect) {
+            if (timerExpired) return;
+
+            const questionIndex = currentQuestionOrder[currentQuestionIndex];
+            const answerOptions = document.querySelectorAll('.answer-option');
+            
+            // In exam mode, ensure only one option can be selected (radio button behavior)
+            if (isExamMode) {
+                answerOptions.forEach(option => option.classList.remove('selected'));
+            }
+
+            // Store the answer with correctness info
+            userAnswers[questionIndex] = {
+                selectedIndex: answerIndex,
+                isCorrect: isCorrect
+            };
+
+            // Update visual selection
+            answerOptions[answerIndex].classList.add('selected');
+
+            // In non-exam mode, show immediate feedback
+            if (!isExamMode) {
+                const originalQuestion = questions[questionIndex];
+                answerOptions.forEach((option, index) => {
+                    option.classList.remove('correct', 'incorrect');
+                    // Find the correct answer in the shuffled options
+                    const currentAnswers = Array.from(document.querySelectorAll('.option-text')).map(el => el.textContent);
+                    const correctAnswerText = originalQuestion.answers.find(a => a.correct).text;
+                    const correctIndex = currentAnswers.indexOf(correctAnswerText);
+                    
+                    if (index === correctIndex) {
+                        option.classList.add('correct');
+                    } else if (index === answerIndex) {
+                        option.classList.add('incorrect');
+                    }
+                    option.classList.add('disabled');
+                });
+            }
+
+            updateQuestionGrid();
+            updateMobileQuestionGrid();
+            updateExamQuestionGrid();
+            updateNavigationButtons();
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            if (currentQuestionIndex < selectedQuestionCount - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+                updateNavigationButtons();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+                updateNavigationButtons();
+            }
+        }
+
+        function jumpToQuestion(questionIndex) {
+            if (questionIndex < selectedQuestionCount) {
+                currentQuestionIndex = questionIndex;
+                loadQuestion();
+                updateNavigationButtons();
+            }
+        }
+
+        function jumpToQuestionNumber() {
+            const input = document.getElementById('jumpInput');
+            const questionNumber = parseInt(input.value);
+            
+            if (questionNumber >= 1 && questionNumber <= selectedQuestionCount) {
+                jumpToQuestion(questionNumber - 1);
+                input.value = '';
+            } else {
+                alert(`Please enter a number between 1 and ${selectedQuestionCount}`);
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === selectedQuestionCount - 1) {
+                nextBtn.style.display = 'none';
+                if (isExamMode) {
+                    submitBtn.style.display = 'inline-block';
+                    finishBtn.style.display = 'none';
+                } else {
+                    finishBtn.style.display = 'inline-block';
+                    submitBtn.style.display = 'none';
+                }
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+                submitBtn.style.display = 'none';
+            }
+
+            // Show submit button in exam mode for instant results
+            if (isExamMode && currentQuestionIndex < selectedQuestionCount - 1) {
+                submitBtn.style.display = 'inline-block';
+            }
+        }
+
+        // Question grid functions
+        function createQuestionGrid() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < selectedQuestionCount; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.textContent = i + 1;
+                gridItem.onclick = () => jumpToQuestion(i);
+                grid.appendChild(gridItem);
+            }
+        }
+
+        function createMobileQuestionGrid() {
+            const grid = document.getElementById('mobileQuestionGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < selectedQuestionCount; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.textContent = i + 1;
+                gridItem.onclick = () => jumpToQuestion(i);
+                grid.appendChild(gridItem);
+            }
+        }
+
+        function createExamQuestionGrid() {
+            const grid = document.getElementById('examGridContainer');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < selectedQuestionCount; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'exam-grid-item';
+                gridItem.textContent = i + 1;
+                gridItem.onclick = () => jumpToQuestion(i);
+                grid.appendChild(gridItem);
+            }
+        }
+
+        function updateQuestionGrid() {
+            const gridItems = document.querySelectorAll('#questionGrid .grid-item');
+            gridItems.forEach((item, index) => {
+                item.classList.remove('current', 'answered', 'unanswered', 'correct', 'incorrect');
+                
+                const questionIndex = currentQuestionOrder[index];
+                if (index === currentQuestionIndex) {
+                    item.classList.add('current');
+                } else if (userAnswers[questionIndex] !== null) {
+                    if (isExamMode) {
+                        item.classList.add('answered');
+                    } else {
+                        // NEW: Check correctness for normal mode
+                        if (userAnswers[questionIndex].isCorrect) {
+                            item.classList.add('correct');
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    }
+                } else {
+                    item.classList.add('unanswered');
+                }
+            });
+        }
+
+        function updateMobileQuestionGrid() {
+            const gridItems = document.querySelectorAll('#mobileQuestionGrid .grid-item');
+            gridItems.forEach((item, index) => {
+                item.classList.remove('current', 'answered', 'unanswered', 'correct', 'incorrect');
+                
+                const questionIndex = currentQuestionOrder[index];
+                if (index === currentQuestionIndex) {
+                    item.classList.add('current');
+                } else if (userAnswers[questionIndex] !== null) {
+                    if (isExamMode) {
+                        item.classList.add('answered');
+                    } else {
+                        // NEW: Check correctness for normal mode
+                        if (userAnswers[questionIndex].isCorrect) {
+                            item.classList.add('correct');
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    }
+                } else {
+                    item.classList.add('unanswered');
+                }
+            });
+        }
+
+        function updateExamQuestionGrid() {
+            const gridItems = document.querySelectorAll('#examGridContainer .exam-grid-item');
+            gridItems.forEach((item, index) => {
+                item.classList.remove('current', 'answered', 'unanswered');
+                
+                const questionIndex = currentQuestionOrder[index];
+                if (index === currentQuestionIndex) {
+                    item.classList.add('current');
+                } else if (userAnswers[questionIndex] !== null) {
+                    item.classList.add('answered');
+                } else {
+                    item.classList.add('unanswered');
+                }
+            });
+        }
+
+        // Mobile dropdown functions
+        function toggleMobileDropdown() {
+            const content = document.getElementById('dropdownContent');
+            const arrow = document.getElementById('dropdownArrow');
+            
+            content.classList.toggle('expanded');
+            arrow.classList.toggle('expanded');
+        }
+
+        // Exam grid toggle functions
+        function toggleExamGrid() {
+            const container = document.getElementById('examGridContainer');
+            const toggle = document.getElementById('examGridToggle');
+            
+            examGridExpanded = !examGridExpanded;
+            
+            if (examGridExpanded) {
+                container.classList.remove('collapsed');
+                toggle.textContent = 'Collapse';
+            } else {
+                container.classList.add('collapsed');
+                toggle.textContent = 'Expand';
+            }
+        }
+
+        // Mode toggle functions
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            const btn = document.getElementById('darkModeBtn');
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                btn.classList.add('active');
+                btn.textContent = '☀️ Light Mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                btn.classList.remove('active');
+                btn.textContent = '🌙 Dark Mode';
+            }
+        }
+
+        function toggleAnswerMode() {
+            isAnswerMode = !isAnswerMode;
+            const btn = document.getElementById('answerModeBtn');
+            
+            if (isAnswerMode) {
+                btn.classList.add('active');
+                btn.textContent = '🔒 Hide Answers';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '💡 Answer Mode';
+            }
+            
+            loadQuestion(); // Reload to apply answer mode styling
+        }
+
+        // NEW: Question shuffle mode for non-exam mode
+        function toggleQuestionShuffleMode() {
+            isQuestionShuffleMode = !isQuestionShuffleMode;
+            const btn = document.getElementById('questionShuffleModeBtn');
+            
+            if (isQuestionShuffleMode) {
+                btn.classList.add('active');
+                btn.textContent = '🔀 Shuffle: ON';
+                currentQuestionOrder = [...shuffledQuestionOrder];
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🔀 Shuffle Questions';
+                currentQuestionOrder = [...originalQuestionOrder];
+            }
+            
+            // Reset to first question and reload
+            currentQuestionIndex = 0;
+            loadQuestion();
+            createQuestionGrid();
+            createMobileQuestionGrid();
+            updateNavigationButtons();
+        }
+
+        // NEW: Question shuffle toggle for exam mode
+        function toggleQuestionShuffle() {
+            isQuestionShuffleEnabled = !isQuestionShuffleEnabled;
+            const btn = document.getElementById('shuffleToggleBtn');
+            const settings = document.querySelector('.question-shuffle-settings');
+            const display = document.getElementById('questionShuffleDisplay');
+            const displayText = document.getElementById('shuffleDisplayText');
+            const resetBtn = document.getElementById('shuffleResetBtn');
+            
+            if (isQuestionShuffleEnabled) {
+                btn.classList.add('active');
+                btn.textContent = 'Enabled';
+                settings.classList.add('hidden');
+                display.classList.add('active');
+                displayText.textContent = 'Shuffle: ON';
+                resetBtn.classList.add('visible');
+                
+                // Apply shuffle
+                currentQuestionOrder = [...shuffledQuestionOrder];
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Enable';
+                settings.classList.remove('hidden');
+                display.classList.remove('active');
+                displayText.textContent = 'Shuffle: Off';
+                resetBtn.classList.remove('visible');
+                
+                // Restore original order
+                currentQuestionOrder = [...originalQuestionOrder];
+            }
+            
+            // Reset to first question and reload
+            currentQuestionIndex = 0;
+            loadQuestion();
+            createExamQuestionGrid();
+            updateNavigationButtons();
+        }
+
+        // NEW: Reset question shuffle
+        function resetQuestionShuffle() {
+            isQuestionShuffleEnabled = false;
+            const btn = document.getElementById('shuffleToggleBtn');
+            const settings = document.querySelector('.question-shuffle-settings');
+            const display = document.getElementById('questionShuffleDisplay');
+            const displayText = document.getElementById('shuffleDisplayText');
+            const resetBtn = document.getElementById('shuffleResetBtn');
+            
+            btn.classList.remove('active');
+            btn.textContent = 'Enable';
+            settings.classList.remove('hidden');
+            display.classList.remove('active');
+            displayText.textContent = 'Shuffle: Off';
+            resetBtn.classList.remove('visible');
+            
+            // Restore original order
+            currentQuestionOrder = [...originalQuestionOrder];
+            currentQuestionIndex = 0;
+            loadQuestion();
+            createExamQuestionGrid();
+            updateNavigationButtons();
+        }
+
+        function toggleExamMode() {
+            isExamMode = !isExamMode;
+            const btn = document.getElementById('examModeBtn');
+            const exitBtn = document.getElementById('exitBtnText');
+            const title = document.querySelector('.title');
+            
+            if (isExamMode) {
+                document.body.classList.add('exam-mode');
+                btn.classList.add('active');
+                btn.textContent = '📝 Exit Exam Mode';
+                exitBtn.textContent = 'Exit Exam Mode';
+                title.textContent = 'EXAM MODE';
+                
+                // Reset all answers and reload
+                userAnswers = new Array(questions.length).fill(null);
+                currentQuestionIndex = 0;
+                loadQuestion();
+                updateNavigationButtons();
+            } else {
+                document.body.classList.remove('exam-mode');
+                btn.classList.remove('active');
+                btn.textContent = '🎓 Simulate Exam Mode';
+                exitBtn.textContent = 'Exit';
+                title.textContent = 'Enhanced Quiz Application';
+                
+                loadQuestion(); // Reload to remove exam mode styling
+            }
+        }
+
+        // NEW: Enhanced question count functions
+        function setQuestionCount() {
+            const input = document.getElementById('questionCountInput');
+            const newCount = parseInt(input.value) || questions.length;
+            
+            if (newCount < 1 || newCount > questions.length) {
+                alert(`Please enter a number between 1 and ${questions.length}`);
+                input.value = selectedQuestionCount;
+                return;
+            }
+            
+            selectedQuestionCount = newCount;
+            
+            // Hide settings and show display
+            const settings = document.querySelector('.question-count-settings');
+            const display = document.getElementById('questionCountDisplay');
+            const displayText = document.getElementById('countDisplayText');
+            const resetBtn = document.getElementById('countResetDisplayBtn');
+            
+            settings.classList.add('hidden');
+            displayText.textContent = `${selectedQuestionCount} / ${questions.length}`;
+            resetBtn.classList.add('visible');
+            
+            // Reset quiz state
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            
+            // Update UI
+            document.getElementById('questionCounter').textContent = `1 / ${selectedQuestionCount}`;
+            document.getElementById('jumpInput').max = selectedQuestionCount;
+            createQuestionGrid();
+            createMobileQuestionGrid();
+            createExamQuestionGrid();
+            loadQuestion();
+            updateNavigationButtons();
+        }
+
+        // NEW: Reset question count
+        function resetQuestionCount() {
+            selectedQuestionCount = questions.length;
+            
+            // Show settings and hide display
+            const settings = document.querySelector('.question-count-settings');
+            const display = document.getElementById('questionCountDisplay');
+            const displayText = document.getElementById('countDisplayText');
+            const resetBtn = document.getElementById('countResetDisplayBtn');
+            const input = document.getElementById('questionCountInput');
+            
+            settings.classList.remove('hidden');
+            displayText.textContent = `${questions.length} / ${questions.length}`;
+            resetBtn.classList.remove('visible');
+            input.value = questions.length;
+            
+            // Reset quiz state
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            
+            // Update UI
+            document.getElementById('questionCounter').textContent = `1 / ${selectedQuestionCount}`;
+            document.getElementById('jumpInput').max = selectedQuestionCount;
+            createQuestionGrid();
+            createMobileQuestionGrid();
+            createExamQuestionGrid();
+            loadQuestion();
+            updateNavigationButtons();
+        }
+
+        // Timer functions
+        function startTimer() {
+            const minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+            const seconds = parseInt(document.getElementById('secondsInput').value) || 0;
+            const totalSeconds = minutes * 60 + seconds;
+
+            if (totalSeconds <= 0) {
+                alert('Please set a valid time');
+                return;
+            }
+
+            timerActive = true;
+            timerExpired = false;
+            let remainingTime = totalSeconds;
+
+            const timer = document.getElementById('timer');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerResetBtn = document.getElementById('timerResetBtn');
+            const timerSettings = document.querySelector('.timer-settings');
+
+            timer.classList.add('active');
+            timerResetBtn.classList.add('visible');
+            timerSettings.classList.add('hidden');
+
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerExpired = true;
+                    timerActive = false;
+                    timer.classList.remove('active');
+                    timerDisplay.textContent = 'Time expired!';
+                    
+                    // Show timer expired overlay
+                    document.getElementById('timerExpiredOverlay').classList.add('visible');
+                    document.getElementById('quizSection').classList.add('timer-expired');
+                    
+                    // Auto-submit quiz
+                    setTimeout(() => {
+                        finishQuiz();
+                    }, 3000);
+                }
+
+                remainingTime--;
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerActive = false;
+            timerExpired = false;
+
+            const timer = document.getElementById('timer');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerResetBtn = document.getElementById('timerResetBtn');
+            const timerSettings = document.querySelector('.timer-settings');
+
+            timer.classList.remove('active');
+            timerResetBtn.classList.remove('visible');
+            timerSettings.classList.remove('hidden');
+            timerDisplay.textContent = 'No timer set';
+
+            document.getElementById('timerExpiredOverlay').classList.remove('visible');
+            document.getElementById('quizSection').classList.remove('timer-expired');
+
+            loadQuestion(); // Reload to remove timer expired styling
+        }
+
+        function hideTimerExpiredOverlay() {
+            document.getElementById('timerExpiredOverlay').classList.remove('visible');
+        }
+
+        // Quiz completion
+        function finishQuiz() {
+            const answeredQuestions = userAnswers.slice(0, selectedQuestionCount).filter(answer => answer !== null).length;
+            const correctAnswers = userAnswers.slice(0, selectedQuestionCount).reduce((count, answer, index) => {
+                if (answer !== null && answer.isCorrect) {
+                    return count + 1;
+                }
+                return count;
+            }, 0);
+
+            const percentage = Math.round((correctAnswers / selectedQuestionCount) * 100);
+            const passed = percentage >= 60;
+
+            if (isExamMode) {
+                // Show result overlay for exam mode
+                const resultOverlay = document.getElementById('resultOverlay');
+                const resultMessage = document.getElementById('resultMessage');
+                const resultTitle = document.getElementById('resultTitle');
+                const resultStats = document.getElementById('resultStats');
+
+                resultTitle.textContent = passed ? '🎉 PASSED!' : '❌ FAILED';
+                resultTitle.className = `result-title ${passed ? 'passed' : 'failed'}`;
+                resultMessage.className = `result-message ${passed ? 'passed' : 'failed'}`;
+
+                resultStats.innerHTML = `
+                    <strong>Questions Answered:</strong> ${answeredQuestions} / ${selectedQuestionCount}<br>
+                    <strong>Correct Answers:</strong> ${correctAnswers} / ${selectedQuestionCount}<br>
+                    <strong>Percentage:</strong> ${percentage}%<br><br>
+                    <em>${passed ? 'Congratulations! You passed the exam.' : 'You need 60% to pass. Better luck next time!'}</em>
+                `;
+
+                resultOverlay.classList.add('visible');
+            } else {
+                // Show alert for normal mode
+                let message = `Quiz Completed!\n\n`;
+                message += `Questions Answered: ${answeredQuestions} / ${selectedQuestionCount}\n`;
+                message += `Correct Answers: ${correctAnswers} / ${selectedQuestionCount}\n`;
+                message += `Percentage: ${percentage}%`;
+
+                alert(message);
+            }
+        }
+
+        function hideResultOverlay() {
+            document.getElementById('resultOverlay').classList.remove('visible');
+        }
+
+        function exitQuiz() {
+            if (isExamMode) {
+                toggleExamMode();
+            } else {
+                if (confirm('Are you sure you want to exit the quiz?')) {
+                    window.close();
+                }
+            }
+        }
+
+        // Initialize the quiz when page loads
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+    </script>
+</body>
+</html>
